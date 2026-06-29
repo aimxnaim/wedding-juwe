@@ -15,9 +15,10 @@ export function createApp() {
 
   app.use('/api/wishes', wishesRouter)
 
-  // In production, serve the built React site from the same server.
-  // Any non-/api request falls back to index.html (single-page app).
-  if (process.env.NODE_ENV === 'production') {
+  // Optionally serve the built React site from this same server (used when
+  // running as a single always-on process). On Vercel the static site is
+  // served by the CDN, so this stays off (SERVE_STATIC is not set there).
+  if (process.env.SERVE_STATIC === '1') {
     app.use(express.static(distPath))
     app.get(/^(?!\/api).*/, (_req, res) => {
       res.sendFile(path.join(distPath, 'index.html'))
