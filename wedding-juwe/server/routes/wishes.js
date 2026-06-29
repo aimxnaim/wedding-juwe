@@ -3,9 +3,23 @@ import Wish from '../models/Wish.js'
 
 const router = Router()
 
+// Tiny in-memory cache so repeated homepage loads don't hit the database
+// every time. Safe here because we run a single server instance. The cache
+// is cleared the moment a new wish is added, so guests still see fresh data.
+const CACHE_TTL_MS = 10_000
+let cache = { data: null, expiresAt: 0 }
+
+function clearCache() {
+  cache = { data: null, expiresAt: 0 }
+}
+
 router.get('/', async (_req, res) => {
   try {
+    if (cache.data && cache.expiresAt > Date.now()) {
+      return res.json(cache.data)
+    }
     const wishes = await Wish.find().sort({ createdAt: -1 }).lean()
+    cache = { data: wishes, expiresAt: Date.now() + CACHE_TTL_MS }
     res.json(wishes)
   } catch {
     res.status(500).json({ error: 'Failed to load wishes' })
@@ -22,6 +36,7 @@ router.post('/', async (req, res) => {
 
   try {
     const wish = await Wish.create({ name, message })
+    clearCache()
     res.status(201).json(wish)
   } catch {
     res.status(500).json({ error: 'Failed to save wish' })
