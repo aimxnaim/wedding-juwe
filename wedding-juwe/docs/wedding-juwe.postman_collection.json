@@ -1,0 +1,75 @@
+{
+  "info": {
+    "name": "Wedding Juwe API",
+    "description": "Endpoints for the wedding wishes site. Set the {{baseUrl}} collection variable to your environment: http://localhost:3001 (local dev backend), http://localhost:4000 (local production server), or https://your-app.vercel.app (deployed).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3001"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "health"]
+        },
+        "description": "Should return {\"ok\": true} when the server is alive."
+      }
+    },
+    {
+      "name": "Get all wishes",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/wishes",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "wishes"]
+        },
+        "description": "Returns all wishes, newest first."
+      }
+    },
+    {
+      "name": "Create a wish (valid)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Test Guest\",\n  \"message\": \"Selamat pengantin baru!\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/wishes",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "wishes"]
+        },
+        "description": "Creates a wish. Expect 201 with the created wish (including _id and createdAt)."
+      }
+    },
+    {
+      "name": "Create a wish (invalid - empty)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"\",\n  \"message\": \"\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/wishes",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "wishes"]
+        },
+        "description": "Validation check. Expect 400 with { error: \"Name and message are required.\" }"
+      }
+    }
+  ]
+}
