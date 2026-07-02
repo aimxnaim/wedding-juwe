@@ -1,21 +1,22 @@
+import arabicNames from '../assets/arabic-names.webp'
 import CornerFlorals from './CornerFlorals'
-import Divider from './Divider'
 import FloatingAccents from './FloatingAccents'
 import Monogram from './Monogram'
 
 export default function Hero() {
   return (
-    <header className="relative overflow-hidden bg-paper px-7 pb-16 pt-14 text-center text-navy">
+    <header className="relative overflow-hidden bg-paper px-7 pb-16 pt-14 text-center text-violet">
       <FloatingAccents />
-      <CornerFlorals corners={['tl', 'tr']} />
+      {/* gold-and-plum floral spray anchored bottom-right, echoing the reference */}
+      <CornerFlorals corners={['br']} className="w-24 sm:w-28" />
 
-      {/* ornamental double-hairline gold frame */}
-      <div className="pointer-events-none absolute inset-3 rounded-[1.9rem] border border-gold/35" />
-      <div className="pointer-events-none absolute inset-[15px] rounded-[1.6rem] border border-gold/20" />
+      {/* violet double-hairline frame */}
+      <div className="pointer-events-none absolute inset-3 rounded-[1.9rem] border border-violet/45" />
+      <div className="pointer-events-none absolute inset-[15px] rounded-[1.6rem] border border-violet/25" />
 
       <div className="relative">
         <p
-          className="animate-fadeup font-arabic text-2xl text-navy/85"
+          className="animate-fadeup font-arabic text-2xl text-violet/85"
           dir="rtl"
           style={{ animationDelay: '80ms' }}
         >
@@ -29,49 +30,62 @@ export default function Hero() {
           Raikan Cinta
         </FlourishLabel>
 
-        <Monogram className="animate-crest mx-auto mt-3 mb-3 w-[20rem] max-w-[88%]" />
+        {/* gold wreath crest — the top floral ring of the reference */}
+        <Monogram className="animate-crest mx-auto mt-3 mb-2 w-[19rem] max-w-[86%]" />
 
-        <h1
-          className="animate-fadeup font-display text-6xl leading-tight text-navy"
+        {/* couple's names, lifted straight from the logo artwork's Arabic
+            lettering (keyed to transparent and recoloured to the theme violet) */}
+        <img
+          src={arabicNames}
+          alt="نجوان & عائشة — Najwan & Aisyah"
+          className="animate-fadeup mx-auto mt-1 w-[17rem] max-w-[74%]"
           style={{ animationDelay: '450ms' }}
-        >
-          Najwan Shah
-        </h1>
+        />
 
-        <div
-          className="animate-fadeup my-2 flex items-center justify-center gap-4"
-          style={{ animationDelay: '560ms' }}
-        >
-          <Rule />
-          <span className="font-display text-3xl italic text-plum/80">dan</span>
-          <Rule className="-scale-x-100" />
-        </div>
-
-        <h1
-          className="animate-fadeup font-display text-6xl leading-tight text-navy"
-          style={{ animationDelay: '650ms' }}
-        >
-          Aisyah
-        </h1>
-
-        <Divider className="animate-fadeup mt-8" style={{ animationDelay: '780ms' }} />
-
-        {/* framed date plate */}
-        <div
-          className="animate-fadeup mx-auto mt-7 w-fit rounded-2xl border border-gold/30
-            bg-cream/50 px-8 py-5 backdrop-blur-[1px]"
-          style={{ animationDelay: '880ms' }}
-        >
-          <p className="text-[0.7rem] uppercase tracking-[0.4em] text-gold">
-            Sabtu
-          </p>
-          <p className="mt-1 font-display text-3xl tracking-wide text-navy">
-            8 Ogos 2026
-          </p>
-          <p className="mt-1 text-navy/60">Masjid Sri Sendayan</p>
-        </div>
+        <DatePlate
+          className="animate-fadeup"
+          style={{ animationDelay: '820ms' }}
+        />
       </div>
     </header>
+  )
+}
+
+/**
+ * The reference date block: month centred on top, a three-column row of
+ * day · big date · time, and the year centred below — the flanking rules
+ * bracket the day and time columns.
+ */
+function DatePlate({
+  className = '',
+  style,
+}: {
+  className?: string
+  style?: React.CSSProperties
+}) {
+  return (
+    <div
+      className={`relative z-10 mx-auto mt-9 grid w-fit max-w-76 grid-cols-[1fr_auto_1fr]
+        items-center gap-x-3 font-display text-violet ${className}`}
+      style={style}
+    >
+      {/* left column: rule · AHAD · rule */}
+      <Rule />
+      <p className="text-center text-[0.72rem] uppercase tracking-[0.4em]">
+        Ogos
+      </p>
+      <Rule className="-scale-x-100" />
+
+      <p className="text-center text-[0.76rem] uppercase tracking-[0.3em]">Ahad</p>
+      <p className="px-1 text-5xl leading-none tracking-wide">30</p>
+      <p className="text-center text-[0.76rem] uppercase tracking-[0.2em]">
+        12:00 PM
+      </p>
+
+      <Rule />
+      <p className="text-center text-[0.82rem] tracking-[0.35em]">2026</p>
+      <Rule className="-scale-x-100" />
+    </div>
   )
 }
 
@@ -120,7 +134,7 @@ function Sprig({ className = '' }: { className?: string }) {
 function Rule({ className = '' }: { className?: string }) {
   return (
     <span
-      className={`h-px w-12 bg-gradient-to-r from-transparent to-gold/70 ${className}`}
+      className={`h-px w-full bg-gradient-to-r from-transparent to-violet/50 ${className}`}
     />
   )
 }

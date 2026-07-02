@@ -8,6 +8,9 @@
   --color-navy: #1e2352;
   --color-navy-deep: #141833;
   --color-plum: #7c556f;
+  --color-violet: #4a3c68;
+  --color-violet-soft: #6b5a8c;
+  --color-violet-deep: #2c2445;
   --color-green: #1f4d36;
   --color-cream: #fbf6ec;
   --color-cream-deep: #f3ead6;
@@ -21,18 +24,26 @@
 body {
   margin: 0;
   background-color: var(--color-cream);
-  color: var(--color-navy);
+  color: var(--color-violet);
   font-family: var(--font-body);
   font-size: 18px;
   -webkit-font-smoothing: antialiased;
 }
 
-/* soft watercolour-paper wash for the hero, echoing the crest artwork */
+/* Handmade-paper grain: fractal-noise SVG overlaid on warm ivory, so the hero
+   reads like the textured watercolour paper of the invitation artwork. The
+   noise is a self-contained data: URI — no external image asset. */
+.paper-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
 .bg-paper {
-  background-color: var(--color-cream);
+  background-color: #f7f1e3;
   background-image:
-    radial-gradient(130% 90% at 50% -12%, #fffdf7 0%, var(--color-cream) 58%),
-    radial-gradient(60% 50% at 50% 118%, rgba(124, 85, 111, 0.06), transparent 70%);
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E"),
+    radial-gradient(130% 90% at 50% -12%, #fffdf7 0%, #f6efdf 58%),
+    radial-gradient(60% 50% at 50% 118%, rgba(74, 60, 104, 0.07), transparent 70%);
+  background-blend-mode: soft-light, normal, normal;
 }
 
 /* Subtle songket-style diamond lattice for the cream sections */
@@ -70,12 +81,11 @@ body {
    the hero's ivory so the two read as distinct, while the top fades out of the
    hero so the seam never looks hard-cut */
 .bg-blush {
-  background-color: #f4ecda;
-  background-image: linear-gradient(
-    180deg,
-    var(--color-cream) 0,
-    rgba(244, 236, 218, 0) 150px
-  );
+  background-color: #f2ead7;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E"),
+    linear-gradient(180deg, #f7f1e3 0, rgba(242, 234, 215, 0) 150px);
+  background-blend-mode: soft-light, normal;
 }
 
 /* ---- wedding-theme motion ---- */

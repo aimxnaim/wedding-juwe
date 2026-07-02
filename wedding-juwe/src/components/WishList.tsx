@@ -14,7 +14,7 @@ function avatarUrl(name: string) {
 export default function WishList({ wishes }: Props) {
   if (wishes.length === 0) {
     return (
-      <p className="text-center font-display text-lg italic text-navy/50">
+      <p className="text-center font-display text-lg italic text-violet/50">
         Jadilah yang pertama meninggalkan ucapan.
       </p>
     )
@@ -34,9 +34,9 @@ export default function WishList({ wishes }: Props) {
               loading="lazy"
               className="h-11 w-11 shrink-0 rounded-full border border-gold/50 bg-cream-deep"
             />
-            <p className="font-display text-xl text-navy">{wish.name}</p>
+            <p className="font-display text-xl text-violet">{wish.name}</p>
           </div>
-          <p className="mt-3 leading-relaxed text-navy/85">{wish.message}</p>
+          <p className="mt-3 leading-relaxed text-violet/85">{wish.message}</p>
         </li>
       ))}
     </ul>
