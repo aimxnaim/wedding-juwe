@@ -18,7 +18,7 @@ export default function WishesSection() {
   return (
     <section className="bg-songket px-5 py-14">
       <div className="mx-auto max-w-md">
-        <h2 className="text-center font-display text-4xl text-maroon">
+        <h2 className="text-center font-display text-4xl text-navy">
           Ucapan &amp; Doa
         </h2>
         <Divider className="mt-4" />
@@ -29,7 +29,7 @@ export default function WishesSection() {
 
         <div className="mt-10">
           {loading ? (
-            <p className="text-center text-maroon/50">Memuatkan ucapan…</p>
+            <p className="text-center text-navy/50">Memuatkan ucapan…</p>
           ) : (
             <>
               {wishes.length > 0 && (

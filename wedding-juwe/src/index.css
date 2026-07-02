@@ -5,6 +5,9 @@
   --color-gold-soft: #e2c97a;
   --color-maroon: #6e1722;
   --color-maroon-deep: #561019;
+  --color-navy: #1e2352;
+  --color-navy-deep: #141833;
+  --color-plum: #7c556f;
   --color-green: #1f4d36;
   --color-cream: #fbf6ec;
   --color-cream-deep: #f3ead6;
@@ -17,10 +20,18 @@
 body {
   margin: 0;
   background-color: var(--color-cream);
-  color: var(--color-maroon);
+  color: var(--color-navy);
   font-family: var(--font-body);
   font-size: 18px;
   -webkit-font-smoothing: antialiased;
+}
+
+/* soft watercolour-paper wash for the hero, echoing the crest artwork */
+.bg-paper {
+  background-color: var(--color-cream);
+  background-image:
+    radial-gradient(130% 90% at 50% -12%, #fffdf7 0%, var(--color-cream) 58%),
+    radial-gradient(60% 50% at 50% 118%, rgba(124, 85, 111, 0.06), transparent 70%);
 }
 
 /* Subtle songket-style diamond lattice for the cream sections */

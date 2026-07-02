@@ -3,36 +3,34 @@ import Monogram from './Monogram'
 
 export default function Hero() {
   return (
-    <header className="relative overflow-hidden bg-gradient-to-b from-maroon-deep via-maroon to-maroon px-6 pb-16 pt-14 text-center text-cream">
+    <header className="relative overflow-hidden bg-paper px-6 pb-14 pt-12 text-center text-navy">
       {/* corner flourishes */}
       <CornerOrnament className="absolute left-3 top-3" />
       <CornerOrnament className="absolute right-3 top-3 -scale-x-100" />
 
-      <p className="font-arabic text-2xl text-gold-soft" dir="rtl">
+      <p className="font-arabic text-2xl text-navy/85" dir="rtl">
         بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْم
       </p>
 
-      <p className="mt-6 font-display text-sm uppercase tracking-[0.45em] text-gold-soft">
+      <p className="mt-6 text-[0.7rem] uppercase tracking-[0.45em] text-plum">
         Raikan Cinta
       </p>
 
-      <Monogram className="mx-auto mt-5 mb-7 w-[19rem] max-w-[86%]" />
+      <Monogram className="mx-auto mt-2 mb-4 w-[21rem] max-w-[90%]" />
 
-      <h1 className="font-display text-5xl leading-tight text-gold-soft sm:text-6xl">
+      <h1 className="font-display text-6xl leading-tight text-navy">
         Najwan Shah
       </h1>
-      <p className="my-1 font-display text-3xl italic text-cream/80">dan</p>
-      <h1 className="font-display text-5xl leading-tight text-gold-soft sm:text-6xl">
-        Aisyah
-      </h1>
+      <p className="my-1 font-display text-3xl italic text-plum/80">dan</p>
+      <h1 className="font-display text-6xl leading-tight text-navy">Aisyah</h1>
 
-      <Divider className="mt-9" />
+      <Divider className="mt-8" />
 
       <div className="mt-7 space-y-1">
-        <p className="font-display text-2xl tracking-wide text-cream">
+        <p className="font-display text-2xl tracking-wide text-navy">
           Sabtu, 8 Ogos 2026
         </p>
-        <p className="text-cream/70">Masjid Sri Sendayan</p>
+        <p className="text-navy/60">Masjid Sri Sendayan</p>
       </div>
     </header>
   )
@@ -41,7 +39,7 @@ export default function Hero() {
 function CornerOrnament({ className = '' }: { className?: string }) {
   return (
     <svg
-      className={`h-16 w-16 text-gold/40 ${className}`}
+      className={`h-16 w-16 text-gold/60 ${className}`}
       viewBox="0 0 64 64"
       fill="none"
       aria-hidden="true"
