@@ -33,7 +33,7 @@ export default function WishesSection() {
 
         <Reveal delay={120}>
           <div
-            className="mt-8 rounded-3xl border border-gold/40 bg-cream/70 p-6 shadow-[0_16px_36px_-16px_rgba(30,35,82,0.28)]
+            className="mt-8 rounded-3xl border border-gold/40 bg-ivory p-6 shadow-[0_18px_40px_-18px_rgba(30,35,82,0.35)]
               ring-1 ring-inset ring-gold/15"
           >
             <WishForm onCreated={(wish) => setWishes((prev) => [wish, ...prev])} />

@@ -4,8 +4,8 @@ import { createWish, type Wish } from '../api/wishes'
 type Props = { onCreated: (wish: Wish) => void }
 
 const fieldClass =
-  'w-full rounded-lg border border-gold/40 bg-white/80 px-4 py-3 text-navy ' +
-  'placeholder:text-navy/30 outline-none transition focus:border-gold ' +
+  'w-full rounded-lg border border-gold/40 bg-cream px-4 py-3 text-navy ' +
+  'placeholder:text-navy/35 outline-none transition focus:border-gold ' +
   'focus:ring-2 focus:ring-gold/30'
 
 export default function WishForm({ onCreated }: Props) {
