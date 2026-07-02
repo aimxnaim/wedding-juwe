@@ -5,9 +5,9 @@ import { connectDB } from './db.js'
 const PORT = process.env.PORT || 3001
 
 // Use a local MongoDB when running locally; use the configured URI in production.
-const isLocal = process.env.NODE_ENV === 'localhost'
+const isLocal = process.env.NODE_ENV === 'development'
 const uri = isLocal
-  ? process.env.MONGODB_URI_LOCAL || 'mongodb://127.0.0.1:27017/wedding'
+  ? process.env.MONGODB_URI_LOCAL
   : process.env.MONGODB_URI
 
 if (!uri) {
