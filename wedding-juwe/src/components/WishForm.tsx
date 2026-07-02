@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { createWish, type Wish } from '../api/wishes'
+import AvatarPicker from './AvatarPicker'
 
 type Props = { onCreated: (wish: Wish) => void }
 
@@ -11,6 +12,8 @@ const fieldClass =
 export default function WishForm({ onCreated }: Props) {
   const [name, setName] = useState('')
   const [message, setMessage] = useState('')
+  // null while the avatar follows the typed name; a seed once the guest picks.
+  const [avatarSeed, setAvatarSeed] = useState<string | null>(null)
   const [status, setStatus] = useState<'idle' | 'sending' | 'done'>('idle')
   const [error, setError] = useState('')
 
@@ -19,10 +22,15 @@ export default function WishForm({ onCreated }: Props) {
     setError('')
     setStatus('sending')
     try {
-      const wish = await createWish({ name: name.trim(), message: message.trim() })
+      const wish = await createWish({
+        name: name.trim(),
+        message: message.trim(),
+        avatarSeed: avatarSeed ?? name.trim(),
+      })
       onCreated(wish)
       setName('')
       setMessage('')
+      setAvatarSeed(null)
       setStatus('done')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong.')
@@ -32,6 +40,10 @@ export default function WishForm({ onCreated }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
+      <div className="flex flex-col items-center">
+        <AvatarPicker name={name} value={avatarSeed} onChange={setAvatarSeed} />
+        <p className="mt-2 text-xs text-violet/50">Ketik untuk tukar avatar</p>
+      </div>
       <div>
         <label
           htmlFor="name"

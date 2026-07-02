@@ -1,15 +1,7 @@
 import type { Wish } from '../api/wishes'
+import { avatarUrl } from '../lib/avatar'
 
 type Props = { wishes: Wish[] }
-
-/** A themed illustrated avatar, seeded by the guest's name so it stays consistent. */
-function avatarUrl(name: string) {
-  const seed = encodeURIComponent(name.trim() || 'tetamu')
-  return (
-    `https://api.dicebear.com/9.x/lorelei/svg?seed=${seed}` +
-    '&backgroundColor=f4ecda,e7d3a1,d8c2d4,efe3c8&radius=50'
-  )
-}
 
 export default function WishList({ wishes }: Props) {
   if (wishes.length === 0) {
@@ -29,7 +21,7 @@ export default function WishList({ wishes }: Props) {
         >
           <div className="flex items-center gap-3">
             <img
-              src={avatarUrl(wish.name)}
+              src={avatarUrl(wish.avatarSeed || wish.name)}
               alt=""
               loading="lazy"
               className="h-11 w-11 shrink-0 rounded-full border border-gold/50 bg-cream-deep"
