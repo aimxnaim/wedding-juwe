@@ -4,8 +4,8 @@ import { createWish, type Wish } from '../api/wishes'
 type Props = { onCreated: (wish: Wish) => void }
 
 const fieldClass =
-  'w-full rounded-lg border border-gold/40 bg-white/80 px-4 py-3 text-maroon ' +
-  'placeholder:text-maroon/30 outline-none transition focus:border-gold ' +
+  'w-full rounded-lg border border-gold/40 bg-cream px-4 py-3 text-navy ' +
+  'placeholder:text-navy/35 outline-none transition focus:border-gold ' +
   'focus:ring-2 focus:ring-gold/30'
 
 export default function WishForm({ onCreated }: Props) {
@@ -66,7 +66,7 @@ export default function WishForm({ onCreated }: Props) {
         />
       </div>
 
-      {error && <p className="text-sm text-maroon">{error}</p>}
+      {error && <p className="text-sm text-plum">{error}</p>}
       {status === 'done' && (
         <p className="text-center text-sm text-green">
           Terima kasih atas ucapan anda 🤍
@@ -76,9 +76,9 @@ export default function WishForm({ onCreated }: Props) {
       <button
         type="submit"
         disabled={status === 'sending'}
-        className="w-full rounded-lg bg-gradient-to-b from-maroon to-maroon-deep py-3.5
+        className="w-full rounded-lg bg-gradient-to-b from-navy to-navy-deep py-3.5
           text-sm uppercase tracking-[0.2em] text-gold-soft shadow-md transition
-          hover:from-maroon-deep hover:to-maroon active:scale-[0.99]
+          hover:from-navy-deep hover:to-navy active:scale-[0.99]
           disabled:opacity-60"
       >
         {status === 'sending' ? 'Menghantar…' : 'Hantar Ucapan'}

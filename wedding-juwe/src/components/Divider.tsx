@@ -1,10 +1,13 @@
-type Props = { className?: string }
+import type { CSSProperties } from 'react'
+
+type Props = { className?: string; style?: CSSProperties }
 
 /** A small gold flourish used to separate sections. */
-export default function Divider({ className = '' }: Props) {
+export default function Divider({ className = '', style }: Props) {
   return (
     <div
       className={`flex items-center justify-center gap-3 text-gold ${className}`}
+      style={style}
       aria-hidden="true"
     >
       <span className="h-px w-10 bg-gradient-to-r from-transparent to-gold/70" />

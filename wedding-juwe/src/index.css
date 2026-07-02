@@ -5,9 +5,13 @@
   --color-gold-soft: #e2c97a;
   --color-maroon: #6e1722;
   --color-maroon-deep: #561019;
+  --color-navy: #1e2352;
+  --color-navy-deep: #141833;
+  --color-plum: #7c556f;
   --color-green: #1f4d36;
   --color-cream: #fbf6ec;
   --color-cream-deep: #f3ead6;
+  --color-ivory: #fffdf6;
 
   --font-display: "Cormorant Garamond", Georgia, serif;
   --font-body: "Cormorant", Georgia, serif;
@@ -17,10 +21,18 @@
 body {
   margin: 0;
   background-color: var(--color-cream);
-  color: var(--color-maroon);
+  color: var(--color-navy);
   font-family: var(--font-body);
   font-size: 18px;
   -webkit-font-smoothing: antialiased;
+}
+
+/* soft watercolour-paper wash for the hero, echoing the crest artwork */
+.bg-paper {
+  background-color: var(--color-cream);
+  background-image:
+    radial-gradient(130% 90% at 50% -12%, #fffdf7 0%, var(--color-cream) 58%),
+    radial-gradient(60% 50% at 50% 118%, rgba(124, 85, 111, 0.06), transparent 70%);
 }
 
 /* Subtle songket-style diamond lattice for the cream sections */
@@ -52,4 +64,125 @@ body {
 
 .animate-rise {
   animation: rise 0.6s ease both;
+}
+
+/* warm champagne paper for the wishes section — a touch deeper/goldener than
+   the hero's ivory so the two read as distinct, while the top fades out of the
+   hero so the seam never looks hard-cut */
+.bg-blush {
+  background-color: #f4ecda;
+  background-image: linear-gradient(
+    180deg,
+    var(--color-cream) 0,
+    rgba(244, 236, 218, 0) 150px
+  );
+}
+
+/* ---- wedding-theme motion ---- */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes crestIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* petals drifting down and swaying across the hero */
+@keyframes petalFall {
+  0% {
+    opacity: 0;
+    transform: translateY(-8%) translateX(0) rotate(0deg);
+  }
+  12% {
+    opacity: var(--petal-opacity, 0.5);
+  }
+  88% {
+    opacity: var(--petal-opacity, 0.5);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(320px) translateX(var(--petal-drift, 24px))
+      rotate(220deg);
+  }
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: scale(0.7);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.15);
+  }
+}
+
+.animate-fadeup {
+  animation: fadeUp 0.8s ease both;
+}
+
+.animate-crest {
+  animation: crestIn 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* scroll reveal (toggled by the Reveal component) */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 0.8s ease,
+    transform 0.8s ease;
+}
+
+.reveal.is-shown {
+  opacity: 1;
+  transform: none;
+}
+
+.petal {
+  position: absolute;
+  top: 0;
+  opacity: 0;
+  border-radius: 0 100% 0 100%;
+  animation: petalFall linear infinite both;
+  will-change: transform, opacity;
+}
+
+.sparkle {
+  position: absolute;
+  opacity: 0;
+  border-radius: 9999px;
+  background: radial-gradient(circle, var(--color-gold-soft), transparent 70%);
+  animation: twinkle ease-in-out infinite both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fadeup,
+  .animate-crest,
+  .animate-rise,
+  .reveal {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .petal,
+  .sparkle {
+    display: none !important;
+  }
 }

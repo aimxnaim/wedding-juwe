@@ -3,12 +3,19 @@ import { createApp } from './app.js'
 import { connectDB } from './db.js'
 
 const PORT = process.env.PORT || 3001
-const uri = process.env.MONGODB_URI
+
+// Use a local MongoDB when running locally; use the configured URI in production.
+const isLocal = process.env.NODE_ENV === 'localhost'
+const uri = isLocal
+  ? process.env.MONGODB_URI_LOCAL || 'mongodb://127.0.0.1:27017/wedding'
+  : process.env.MONGODB_URI
 
 if (!uri) {
   console.error('MONGODB_URI is not set. Copy .env.example to .env and fill it in.')
   process.exit(1)
 }
+
+console.log(`Connecting to MongoDB (${isLocal ? 'local' : 'production'})`)
 
 connectDB(uri)
   .then(() => {
