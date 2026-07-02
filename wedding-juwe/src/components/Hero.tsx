@@ -1,4 +1,5 @@
 import Divider from './Divider'
+import Monogram from './Monogram'
 
 export default function Hero() {
   return (
@@ -11,15 +12,11 @@ export default function Hero() {
         بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْم
       </p>
 
-      <p className="mt-6 text-[0.7rem] uppercase tracking-[0.4em] text-gold">
-        Walimatulurus
+      <p className="mt-6 font-display text-sm uppercase tracking-[0.45em] text-gold-soft">
+        Raikan Cinta
       </p>
 
-      <div className="mx-auto mt-7 mb-8 h-36 w-36 rounded-full p-[3px] ring-1 ring-gold/40">
-        <div className="flex h-full w-full items-center justify-center rounded-full border border-gold/60 bg-maroon-deep/40">
-          <span className="font-display text-5xl text-gold-soft">N&nbsp;&amp;&nbsp;A</span>
-        </div>
-      </div>
+      <Monogram className="mx-auto mt-5 mb-7 w-[19rem] max-w-[86%]" />
 
       <h1 className="font-display text-5xl leading-tight text-gold-soft sm:text-6xl">
         Najwan Shah
