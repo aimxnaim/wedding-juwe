@@ -7,7 +7,7 @@ export default function Hero() {
   return (
     <header className="relative overflow-hidden bg-paper px-7 pb-16 pt-14 text-center text-navy">
       <FloatingAccents />
-      <CornerFlorals />
+      <CornerFlorals corners={['tl', 'tr']} />
 
       {/* ornamental double-hairline gold frame */}
       <div className="pointer-events-none absolute inset-3 rounded-[1.9rem] border border-gold/35" />

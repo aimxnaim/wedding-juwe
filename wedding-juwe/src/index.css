@@ -65,20 +65,17 @@ body {
   animation: rise 0.6s ease both;
 }
 
-/* faint blush paper for the wishes section — a hair cooler/pinker than the
-   hero so the two read as distinct without an obvious seam */
+/* faint blush paper for the wishes section — distinct from the hero but the
+   top fades out of the hero's ivory so the seam (and any foliage crossing it)
+   never looks hard-cut */
 .bg-blush {
-  background-color: #f6eef1;
+  background-color: #f4ecee;
   background-image:
-    repeating-linear-gradient(
-      45deg,
-      rgba(201, 162, 39, 0.05) 0 1px,
-      transparent 1px 14px
-    ),
-    repeating-linear-gradient(
-      -45deg,
-      rgba(201, 162, 39, 0.05) 0 1px,
-      transparent 1px 14px
+    linear-gradient(180deg, var(--color-cream) 0, rgba(244, 236, 238, 0) 150px),
+    radial-gradient(
+      120% 55% at 50% 118%,
+      rgba(124, 85, 111, 0.06),
+      transparent 70%
     );
 }
 

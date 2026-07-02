@@ -20,7 +20,7 @@ export default function WishList({ wishes }: Props) {
       {wishes.map((wish) => (
         <li
           key={wish._id}
-          className="animate-rise rounded-2xl border border-gold/30 bg-white/90 p-5 shadow-sm"
+          className="animate-rise rounded-2xl border border-gold/30 bg-cream/80 p-5 shadow-sm"
         >
           <div className="flex items-center gap-3">
             <span
