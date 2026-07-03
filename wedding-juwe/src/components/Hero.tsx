@@ -65,26 +65,31 @@ function DatePlate({
 }) {
   return (
     <div
-      className={`relative z-10 mx-auto mt-9 grid w-fit max-w-76 grid-cols-[1fr_auto_1fr]
-        items-center gap-x-3 font-display text-violet ${className}`}
+      className={`relative z-10 mx-auto mt-9 flex w-fit max-w-76 flex-col items-center
+        gap-y-2.5 font-display text-violet ${className}`}
       style={style}
     >
-      {/* left column: rule · AHAD · rule */}
-      <Rule />
-      <p className="text-center text-[0.72rem] uppercase tracking-[0.4em]">
-        Ogos
-      </p>
-      <Rule className="-scale-x-100" />
+      <div className="grid w-full grid-cols-[1fr_auto_1fr] items-center gap-x-3">
+        <Rule />
+        <p className="text-center text-[0.72rem] uppercase tracking-[0.4em]">
+          Ogos
+        </p>
+        <Rule className="-scale-x-100" />
+      </div>
 
-      <p className="text-center text-[0.76rem] uppercase tracking-[0.3em]">Ahad</p>
-      <p className="px-1 text-5xl leading-none tracking-wide">30</p>
-      <p className="text-center text-[0.76rem] uppercase tracking-[0.2em]">
-        12:00 PM
-      </p>
+      <div className="grid w-full grid-cols-[1fr_auto_1fr] items-center gap-x-3">
+        <p className="text-center text-[0.76rem] uppercase tracking-[0.3em]">Ahad</p>
+        <p className="px-1 text-5xl leading-none tracking-wide">30</p>
+        <p className="text-center text-[0.8rem] uppercase tracking-[0.2em]">
+          12:00 PM
+        </p>
+      </div>
 
-      <Rule />
-      <p className="text-center text-[0.82rem] tracking-[0.35em]">2026</p>
-      <Rule className="-scale-x-100" />
+      <div className="grid w-full grid-cols-[1fr_auto_1fr] items-center gap-x-3">
+        <Rule />
+        <p className="text-center text-[0.82rem] tracking-[0.35em]">2026</p>
+        <Rule className="-scale-x-100" />
+      </div>
     </div>
   )
 }
