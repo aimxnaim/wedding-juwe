@@ -46,26 +46,38 @@ export default function LocationSection() {
                 15150, Kota Bharu, Kelantan.
               </p>
 
-              <div className="mt-5 flex justify-center gap-3">
+              <div className="mt-5 flex justify-center gap-8">
                 <a
                   href={WAZE_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 rounded-full bg-[#05C8F6] px-4 py-2 text-xs uppercase
-                    tracking-[0.2em] text-white transition hover:brightness-95"
+                  className="flex flex-col items-center gap-2"
                 >
-                  <SiWaze className="h-4 w-4" />
-                  Waze
+                  <span
+                    className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#05C8F6]
+                      shadow-[0_10px_20px_-8px_rgba(5,200,246,0.6)] transition hover:brightness-95"
+                  >
+                    <SiWaze className="h-7 w-7 text-white" />
+                  </span>
+                  <span className="text-[0.65rem] uppercase tracking-[0.2em] text-violet/80">
+                    Waze
+                  </span>
                 </a>
                 <a
                   href={GOOGLE_MAPS_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 rounded-full bg-[#4285F4] px-4 py-2 text-xs uppercase
-                    tracking-[0.2em] text-white transition hover:brightness-95"
+                  className="flex flex-col items-center gap-2"
                 >
-                  <SiGooglemaps className="h-4 w-4" />
-                  Google Maps
+                  <span
+                    className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#4285F4]
+                      shadow-[0_10px_20px_-8px_rgba(66,133,244,0.6)] transition hover:brightness-95"
+                  >
+                    <SiGooglemaps className="h-7 w-7 text-white" />
+                  </span>
+                  <span className="text-[0.65rem] uppercase tracking-[0.2em] text-violet/80">
+                    Google Maps
+                  </span>
                 </a>
               </div>
             </div>
