@@ -17,6 +17,23 @@ export default function WishList({ wishes }: Props) {
   const [active, setActive] = useState(0)
   const pausedRef = useRef(false)
   const resumeTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const inViewRef = useRef(false)
+
+  // Only auto-advance while the carousel is actually on screen, so it can't
+  // do anything (visible or not) to the page's scroll position while the
+  // guest is elsewhere, e.g. still up on the hero.
+  useEffect(() => {
+    const track = trackRef.current
+    if (!track || typeof IntersectionObserver === 'undefined') {
+      inViewRef.current = true
+      return
+    }
+    const io = new IntersectionObserver(([entry]) => {
+      inViewRef.current = entry.isIntersecting
+    })
+    io.observe(track)
+    return () => io.disconnect()
+  }, [])
 
   // Track which card is centred in view, so the dots and auto-advance agree
   // with whatever the user last scrolled to (manually or automatically).
@@ -45,18 +62,24 @@ export default function WishList({ wishes }: Props) {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
     const id = setInterval(() => {
-      if (pausedRef.current) return
+      if (pausedRef.current || !inViewRef.current) return
       scrollToCard((active + 1) % wishes.length)
     }, AUTO_ADVANCE_MS)
     return () => clearInterval(id)
   }, [active, wishes.length])
 
+  // Scrolls only the carousel's own horizontal track — never scrollIntoView,
+  // which walks up every scrollable ancestor (including the page itself) and
+  // would yank the whole viewport down to the carousel on auto-advance.
   function scrollToCard(index: number) {
-    cardRefs.current[index]?.scrollIntoView({
-      behavior: 'smooth',
-      inline: 'center',
-      block: 'nearest',
-    })
+    const track = trackRef.current
+    const card = cardRefs.current[index]
+    if (!track || !card) return
+    const trackRect = track.getBoundingClientRect()
+    const cardRect = card.getBoundingClientRect()
+    const cardOffset = cardRect.left - trackRect.left + track.scrollLeft
+    const target = cardOffset - (track.clientWidth - card.clientWidth) / 2
+    track.scrollTo({ left: target, behavior: 'smooth' })
   }
 
   function pause() {
