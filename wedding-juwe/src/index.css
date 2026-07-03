@@ -8,6 +8,9 @@
   --color-navy: #1e2352;
   --color-navy-deep: #141833;
   --color-plum: #7c556f;
+  --color-violet: #4a3c68;
+  --color-violet-soft: #6b5a8c;
+  --color-violet-deep: #2c2445;
   --color-green: #1f4d36;
   --color-cream: #fbf6ec;
   --color-cream-deep: #f3ead6;
@@ -21,18 +24,37 @@
 body {
   margin: 0;
   background-color: var(--color-cream);
-  color: var(--color-navy);
+  color: var(--color-violet);
   font-family: var(--font-body);
   font-size: 18px;
   -webkit-font-smoothing: antialiased;
 }
 
-/* soft watercolour-paper wash for the hero, echoing the crest artwork */
+/* Handmade-paper grain: fractal-noise SVG overlaid on warm ivory, so the hero
+   reads like the textured watercolour paper of the invitation artwork. The
+   noise is a self-contained data: URI — no external image asset. */
+.paper-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
 .bg-paper {
-  background-color: var(--color-cream);
+  background-color: #f7f1e3;
   background-image:
-    radial-gradient(130% 90% at 50% -12%, #fffdf7 0%, var(--color-cream) 58%),
-    radial-gradient(60% 50% at 50% 118%, rgba(124, 85, 111, 0.06), transparent 70%);
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E"),
+    radial-gradient(130% 90% at 50% -12%, #fffdf7 0%, #f6efdf 58%),
+    radial-gradient(60% 50% at 50% 118%, rgba(74, 60, 104, 0.07), transparent 70%);
+  background-blend-mode: soft-light, normal, normal;
+}
+
+/* paper tone that fades in from Hero's base color at the top, instead of
+   restarting bg-paper's bright highlight — avoids a hard seam between
+   Hero and the section directly below it (same technique as .bg-blush) */
+.bg-paper-fade {
+  background-color: #f7f1e3;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E"),
+    linear-gradient(180deg, #f7f1e3 0, rgba(247, 241, 227, 0) 150px);
+  background-blend-mode: soft-light, normal;
 }
 
 /* Subtle songket-style diamond lattice for the cream sections */
@@ -66,16 +88,25 @@ body {
   animation: rise 0.6s ease both;
 }
 
+/* hides the scrollbar on the swipeable wishes carousel, without disabling scroll */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* warm champagne paper for the wishes section — a touch deeper/goldener than
    the hero's ivory so the two read as distinct, while the top fades out of the
    hero so the seam never looks hard-cut */
 .bg-blush {
-  background-color: #f4ecda;
-  background-image: linear-gradient(
-    180deg,
-    var(--color-cream) 0,
-    rgba(244, 236, 218, 0) 150px
-  );
+  background-color: #f2ead7;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E"),
+    linear-gradient(180deg, #f7f1e3 0, rgba(242, 234, 215, 0) 150px);
+  background-blend-mode: soft-light, normal;
 }
 
 /* ---- wedding-theme motion ---- */
@@ -140,6 +171,48 @@ body {
   animation: crestIn 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+/* gold spark bursting outward from the ornament and fading, like a small
+   firework — celebrates the countdown reaching its target on a loop */
+@keyframes fireworkBurst {
+  0% {
+    transform: translate(-50%, -50%) scale(0.4);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(calc(-50% + var(--burst-x)), calc(-50% + var(--burst-y))) scale(1);
+    opacity: 0;
+  }
+}
+
+.firework-spark {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border-radius: 9999px;
+  background: radial-gradient(circle, #fff8e6, var(--color-gold-soft) 55%, var(--color-gold) 80%);
+  box-shadow: 0 0 8px 2px rgba(201, 162, 39, 0.55);
+  animation: fireworkBurst 1.6s ease-out infinite both;
+}
+
+/* slow, gentle breathing glow on the celebration heading */
+@keyframes celebrateGlow {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+    text-shadow: 0 0 18px rgba(201, 162, 39, 0.35);
+  }
+}
+
+.animate-celebrate-glow {
+  animation: celebrateGlow 2.6s ease-in-out infinite both;
+}
+
 /* scroll reveal (toggled by the Reveal component) */
 .reveal {
   opacity: 0;
@@ -175,6 +248,7 @@ body {
   .animate-fadeup,
   .animate-crest,
   .animate-rise,
+  .animate-celebrate-glow,
   .reveal {
     animation: none !important;
     opacity: 1 !important;
@@ -182,7 +256,8 @@ body {
     transition: none !important;
   }
   .petal,
-  .sparkle {
+  .sparkle,
+  .firework-spark {
     display: none !important;
   }
 }

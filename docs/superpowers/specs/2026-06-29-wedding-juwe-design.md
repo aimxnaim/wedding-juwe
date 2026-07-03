@@ -14,7 +14,9 @@ that is then displayed publicly so other guests can read everyone's wishes.
 - **Groom:** Najwan Shah
 - **Bride:** Aisyah
 - **Date:** 8 August 2026 (8/8/2026)
-- **Venue:** Masjid Sri Sendayan
+- **Venue:** Lot-1700, Jalan Masjid Lundang, 15150, Kota Bharu, Kelantan
+  (superseded from the original "Masjid Sri Sendayan" — see
+  `2026-07-03-map-location-design.md`)
 
 ## Visual Style
 

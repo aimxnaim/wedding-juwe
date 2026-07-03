@@ -25,7 +25,7 @@ export default function WishesSection() {
       <div className="relative mx-auto max-w-md">
         <Reveal>
           <SectionOrnament className="w-52" />
-          <h2 className="mt-5 text-center font-display text-4xl text-navy">
+          <h2 className="mt-5 text-center font-display text-4xl text-violet">
             Ucapan &amp; Doa
           </h2>
           <Divider className="mt-4" />
@@ -42,7 +42,7 @@ export default function WishesSection() {
 
         <Reveal delay={200} className="mt-10">
           {loading ? (
-            <p className="text-center text-navy/50">Memuatkan ucapan…</p>
+            <p className="text-center text-violet/50">Memuatkan ucapan…</p>
           ) : (
             <>
               {wishes.length > 0 && (

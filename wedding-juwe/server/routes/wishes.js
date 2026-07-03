@@ -29,13 +29,16 @@ router.get('/', async (_req, res) => {
 router.post('/', async (req, res) => {
   const name = typeof req.body?.name === 'string' ? req.body.name.trim() : ''
   const message = typeof req.body?.message === 'string' ? req.body.message.trim() : ''
+  const rawSeed = typeof req.body?.avatarSeed === 'string' ? req.body.avatarSeed.trim() : ''
+  // Cap the seed length; fall back to the name when none was chosen.
+  const avatarSeed = (rawSeed || name).slice(0, 64)
 
   if (!name || !message) {
     return res.status(400).json({ error: 'Name and message are required.' })
   }
 
   try {
-    const wish = await Wish.create({ name, message })
+    const wish = await Wish.create({ name, message, avatarSeed })
     clearCache()
     res.status(201).json(wish)
   } catch {

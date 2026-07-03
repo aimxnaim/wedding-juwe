@@ -39,14 +39,14 @@ export default function CornerFlorals({
         <img
           src={brFloral}
           alt=""
-          className={`animate-fadeup absolute -bottom-2 -left-3 -scale-x-100 ${className}`}
+          className={`animate-fadeup absolute bottom-2 left-2 -scale-x-100 ${className}`}
         />
       )}
       {show('br') && (
         <img
           src={brFloral}
           alt=""
-          className={`animate-fadeup absolute -bottom-2 -right-3 ${className}`}
+          className={`animate-fadeup absolute bottom-2 right-2 ${className}`}
         />
       )}
     </div>
