@@ -47,7 +47,7 @@ export default function CountdownSection() {
   const { days, hours, minutes, seconds, isPast } = useCountdown(WEDDING_DATE_ISO)
 
   return (
-    <section className="relative overflow-hidden bg-paper px-5 pb-16 pt-14 text-violet">
+    <section className="relative overflow-hidden bg-paper-fade px-5 pb-16 pt-14 text-violet">
       <FloatingAccents />
 
       <div className="relative mx-auto max-w-md">
