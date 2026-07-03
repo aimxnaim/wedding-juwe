@@ -109,7 +109,7 @@ export default function WishList({ wishes }: Props) {
         onPointerDown={pause}
         onPointerUp={scheduleResume}
         onPointerCancel={scheduleResume}
-        className="no-scrollbar flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth px-8 pb-1"
+        className="no-scrollbar flex snap-x snap-mandatory items-start gap-4 overflow-x-auto scroll-smooth px-8 pb-1"
       >
         {wishes.map((wish, i) => (
           <li
@@ -129,7 +129,7 @@ export default function WishList({ wishes }: Props) {
               />
               <p className="font-display text-xl text-violet">{wish.name}</p>
             </div>
-            <p className="mt-3 leading-relaxed text-violet/85">{wish.message}</p>
+            <WishMessage message={wish.message} />
           </li>
         ))}
       </ul>
@@ -155,5 +155,42 @@ export default function WishList({ wishes }: Props) {
         </div>
       )}
     </div>
+  )
+}
+
+/**
+ * Clamps a wish message to 4 lines and reveals a "Baca Lagi" toggle only
+ * when the text actually overflows the clamp — so short messages never show
+ * a pointless button, and each card's expand state stays local to itself.
+ */
+function WishMessage({ message }: { message: string }) {
+  const textRef = useRef<HTMLParagraphElement>(null)
+  const [isOverflowing, setIsOverflowing] = useState(false)
+  const [expanded, setExpanded] = useState(false)
+
+  useEffect(() => {
+    const el = textRef.current
+    if (!el) return
+    setIsOverflowing(el.scrollHeight > el.clientHeight + 1)
+  }, [message])
+
+  return (
+    <>
+      <p
+        ref={textRef}
+        className={`mt-3 leading-relaxed text-violet/85 ${expanded ? '' : 'line-clamp-4'}`}
+      >
+        {message}
+      </p>
+      {(isOverflowing || expanded) && (
+        <button
+          type="button"
+          onClick={() => setExpanded((prev) => !prev)}
+          className="mt-1.5 text-sm font-medium text-gold underline-offset-2 hover:underline"
+        >
+          {expanded ? 'Lebih Sikit' : 'Baca Lagi'}
+        </button>
+      )}
+    </>
   )
 }

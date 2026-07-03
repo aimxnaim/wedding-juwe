@@ -1,3 +1,4 @@
+import { SiGooglemaps, SiWaze } from 'react-icons/si'
 import Divider from './Divider'
 import FloatingAccents from './FloatingAccents'
 import Reveal from './Reveal'
@@ -45,24 +46,40 @@ export default function LocationSection() {
                 15150, Kota Bharu, Kelantan.
               </p>
 
-              <div className="mt-5 flex justify-center gap-3">
+              <div className="mt-5 flex justify-center gap-8">
                 <a
                   href={WAZE_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-full border border-gold/50 px-4 py-2 text-xs uppercase tracking-[0.2em] text-violet
-                    transition hover:bg-gold/10"
+                  className="flex flex-col items-center gap-2"
                 >
-                  Buka di Waze
+                  <span
+                    className="flex h-14 w-14 items-center justify-center rounded-2xl border border-gold/40 bg-ivory
+                      shadow-[0_10px_20px_-8px_rgba(30,35,82,0.35)] ring-1 ring-inset ring-gold/15 transition
+                      hover:bg-gold/10"
+                  >
+                    <SiWaze className="h-7 w-7 text-[#05C8F6]" />
+                  </span>
+                  <span className="text-[0.65rem] uppercase tracking-[0.2em] text-violet/80">
+                    Waze
+                  </span>
                 </a>
                 <a
                   href={GOOGLE_MAPS_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-full border border-gold/50 px-4 py-2 text-xs uppercase tracking-[0.2em] text-violet
-                    transition hover:bg-gold/10"
+                  className="flex flex-col items-center gap-2"
                 >
-                  Buka di Google Maps
+                  <span
+                    className="flex h-14 w-14 items-center justify-center rounded-2xl border border-gold/40 bg-ivory
+                      shadow-[0_10px_20px_-8px_rgba(30,35,82,0.35)] ring-1 ring-inset ring-gold/15 transition
+                      hover:bg-gold/10"
+                  >
+                    <SiGooglemaps className="h-7 w-7 text-[#4285F4]" />
+                  </span>
+                  <span className="text-[0.65rem] uppercase tracking-[0.2em] text-violet/80">
+                    Google Maps
+                  </span>
                 </a>
               </div>
             </div>
