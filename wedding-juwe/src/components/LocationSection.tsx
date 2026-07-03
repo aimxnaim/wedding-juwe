@@ -54,10 +54,11 @@ export default function LocationSection() {
                   className="flex flex-col items-center gap-2"
                 >
                   <span
-                    className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#05C8F6]
-                      shadow-[0_10px_20px_-8px_rgba(5,200,246,0.6)] transition hover:brightness-95"
+                    className="flex h-14 w-14 items-center justify-center rounded-2xl border border-gold/40 bg-ivory
+                      shadow-[0_10px_20px_-8px_rgba(30,35,82,0.35)] ring-1 ring-inset ring-gold/15 transition
+                      hover:bg-gold/10"
                   >
-                    <SiWaze className="h-7 w-7 text-white" />
+                    <SiWaze className="h-7 w-7 text-[#05C8F6]" />
                   </span>
                   <span className="text-[0.65rem] uppercase tracking-[0.2em] text-violet/80">
                     Waze
@@ -70,10 +71,11 @@ export default function LocationSection() {
                   className="flex flex-col items-center gap-2"
                 >
                   <span
-                    className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#4285F4]
-                      shadow-[0_10px_20px_-8px_rgba(66,133,244,0.6)] transition hover:brightness-95"
+                    className="flex h-14 w-14 items-center justify-center rounded-2xl border border-gold/40 bg-ivory
+                      shadow-[0_10px_20px_-8px_rgba(30,35,82,0.35)] ring-1 ring-inset ring-gold/15 transition
+                      hover:bg-gold/10"
                   >
-                    <SiGooglemaps className="h-7 w-7 text-white" />
+                    <SiGooglemaps className="h-7 w-7 text-[#4285F4]" />
                   </span>
                   <span className="text-[0.65rem] uppercase tracking-[0.2em] text-violet/80">
                     Google Maps
