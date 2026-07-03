@@ -1,3 +1,4 @@
+import { SiGooglemaps, SiWaze } from 'react-icons/si'
 import Divider from './Divider'
 import FloatingAccents from './FloatingAccents'
 import Reveal from './Reveal'
@@ -53,7 +54,7 @@ export default function LocationSection() {
                   className="flex items-center gap-2 rounded-full bg-[#05C8F6] px-4 py-2 text-xs uppercase
                     tracking-[0.2em] text-white transition hover:brightness-95"
                 >
-                  <WazeIcon className="h-4 w-4" />
+                  <SiWaze className="h-4 w-4" />
                   Waze
                 </a>
                 <a
@@ -63,7 +64,7 @@ export default function LocationSection() {
                   className="flex items-center gap-2 rounded-full bg-[#4285F4] px-4 py-2 text-xs uppercase
                     tracking-[0.2em] text-white transition hover:brightness-95"
                 >
-                  <GoogleMapsIcon className="h-4 w-4" />
+                  <SiGooglemaps className="h-4 w-4" />
                   Google Maps
                 </a>
               </div>
@@ -72,29 +73,5 @@ export default function LocationSection() {
         </Reveal>
       </div>
     </section>
-  )
-}
-
-function WazeIcon({ className = '' }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
-      <path
-        d="M12 2C7.58 2 4 5.58 4 10c0 5.25 6.72 11.44 7 11.7a1 1 0 0 0 1.4 0C13 21.44 20 15.25 20 10c0-4.42-3.58-8-8-8Z"
-        fill="#fff"
-      />
-      <circle cx="12" cy="10" r="3" fill="#05C8F6" />
-    </svg>
-  )
-}
-
-function GoogleMapsIcon({ className = '' }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
-      <path
-        d="M12 2C7.58 2 4 5.58 4 10c0 5.25 6.72 11.44 7 11.7a1 1 0 0 0 1.4 0C13 21.44 20 15.25 20 10c0-4.42-3.58-8-8-8Z"
-        fill="#fff"
-      />
-      <circle cx="12" cy="10" r="3" fill="#4285F4" />
-    </svg>
   )
 }
