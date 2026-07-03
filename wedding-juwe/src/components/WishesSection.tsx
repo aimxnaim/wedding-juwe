@@ -12,10 +12,33 @@ export default function WishesSection() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    getWishes()
-      .then(setWishes)
-      .catch(() => setWishes([]))
-      .finally(() => setLoading(false))
+    let cancelled = false
+
+    const refresh = () =>
+      getWishes()
+        .then((data) => {
+          if (!cancelled) setWishes(data)
+        })
+        .catch(() => {})
+        .finally(() => {
+          if (!cancelled) setLoading(false)
+        })
+
+    refresh()
+
+    const intervalId = setInterval(refresh, 15000)
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') refresh()
+    }
+    document.addEventListener('visibilitychange', onVisible)
+    window.addEventListener('focus', refresh)
+
+    return () => {
+      cancelled = true
+      clearInterval(intervalId)
+      document.removeEventListener('visibilitychange', onVisible)
+      window.removeEventListener('focus', refresh)
+    }
   }, [])
 
   return (
