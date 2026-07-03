@@ -1,59 +1,145 @@
-import Divider from './Divider'
+import arabicNames from '../assets/arabic-names.webp'
+import CornerFlorals from './CornerFlorals'
+import FloatingAccents from './FloatingAccents'
+import Monogram from './Monogram'
 
 export default function Hero() {
   return (
-    <header className="relative overflow-hidden bg-gradient-to-b from-maroon-deep via-maroon to-maroon px-6 pb-16 pt-14 text-center text-cream">
-      {/* corner flourishes */}
-      <CornerOrnament className="absolute left-3 top-3" />
-      <CornerOrnament className="absolute right-3 top-3 -scale-x-100" />
+    <header className="relative overflow-hidden bg-paper px-7 pb-16 pt-14 text-center text-violet">
+      <FloatingAccents />
+      {/* gold-and-plum floral spray anchored bottom-right, echoing the reference */}
+      <CornerFlorals corners={['br']} className="w-24 sm:w-28" />
 
-      <p className="font-arabic text-2xl text-gold-soft" dir="rtl">
-        بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْم
-      </p>
+      {/* violet double-hairline frame */}
+      <div className="pointer-events-none absolute inset-3 rounded-[1.9rem] border border-violet/45" />
+      <div className="pointer-events-none absolute inset-[15px] rounded-[1.6rem] border border-violet/25" />
 
-      <p className="mt-6 text-[0.7rem] uppercase tracking-[0.4em] text-gold">
-        Walimatulurus
-      </p>
-
-      <div className="mx-auto mt-7 mb-8 h-36 w-36 rounded-full p-[3px] ring-1 ring-gold/40">
-        <div className="flex h-full w-full items-center justify-center rounded-full border border-gold/60 bg-maroon-deep/40">
-          <span className="font-display text-5xl text-gold-soft">N&nbsp;&amp;&nbsp;A</span>
-        </div>
-      </div>
-
-      <h1 className="font-display text-5xl leading-tight text-gold-soft sm:text-6xl">
-        Najwan Shah
-      </h1>
-      <p className="my-1 font-display text-3xl italic text-cream/80">dan</p>
-      <h1 className="font-display text-5xl leading-tight text-gold-soft sm:text-6xl">
-        Aisyah
-      </h1>
-
-      <Divider className="mt-9" />
-
-      <div className="mt-7 space-y-1">
-        <p className="font-display text-2xl tracking-wide text-cream">
-          Sabtu, 8 Ogos 2026
+      <div className="relative">
+        <p
+          className="animate-fadeup font-arabic text-2xl text-violet/85"
+          dir="rtl"
+          style={{ animationDelay: '80ms' }}
+        >
+          بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْم
         </p>
-        <p className="text-cream/70">Masjid Sri Sendayan</p>
+
+        <FlourishLabel
+          className="animate-fadeup mt-6"
+          style={{ animationDelay: '200ms' }}
+        >
+          Raikan Cinta
+        </FlourishLabel>
+
+        {/* gold wreath crest — the top floral ring of the reference */}
+        <Monogram className="animate-crest mx-auto mt-3 mb-2 w-[19rem] max-w-[86%]" />
+
+        {/* couple's names, lifted straight from the logo artwork's Arabic
+            lettering (keyed to transparent and recoloured to the theme violet) */}
+        <img
+          src={arabicNames}
+          alt="نجوان & عائشة — Najwan & Aisyah"
+          className="animate-fadeup mx-auto mt-1 w-[17rem] max-w-[74%]"
+          style={{ animationDelay: '450ms' }}
+        />
+
+        <DatePlate
+          className="animate-fadeup"
+          style={{ animationDelay: '820ms' }}
+        />
       </div>
     </header>
   )
 }
 
-function CornerOrnament({ className = '' }: { className?: string }) {
+/**
+ * The reference date block: month centred on top, a three-column row of
+ * day · big date · time, and the year centred below — the flanking rules
+ * bracket the day and time columns.
+ */
+function DatePlate({
+  className = '',
+  style,
+}: {
+  className?: string
+  style?: React.CSSProperties
+}) {
+  return (
+    <div
+      className={`relative z-10 mx-auto mt-9 flex w-fit max-w-76 flex-col items-center
+        gap-y-2.5 font-display text-violet ${className}`}
+      style={style}
+    >
+      <div className="grid w-full grid-cols-[1fr_auto_1fr] items-center gap-x-3">
+        <Rule />
+        <p className="text-center text-[0.72rem] uppercase tracking-[0.4em]">
+          Ogos
+        </p>
+        <Rule className="-scale-x-100" />
+      </div>
+
+      <div className="grid w-full grid-cols-[1fr_auto_1fr] items-center gap-x-3">
+        <p className="text-center text-[0.76rem] uppercase tracking-[0.3em]">Ahad</p>
+        <p className="px-1 text-5xl leading-none tracking-wide">30</p>
+        <p className="text-center text-[0.8rem] uppercase tracking-[0.2em]">
+          12:00 PM
+        </p>
+      </div>
+
+      <div className="grid w-full grid-cols-[1fr_auto_1fr] items-center gap-x-3">
+        <Rule />
+        <p className="text-center text-[0.82rem] tracking-[0.35em]">2026</p>
+        <Rule className="-scale-x-100" />
+      </div>
+    </div>
+  )
+}
+
+/** A centered label flanked by small gold leaf sprigs. */
+function FlourishLabel({
+  children,
+  className = '',
+  style,
+}: {
+  children: React.ReactNode
+  className?: string
+  style?: React.CSSProperties
+}) {
+  return (
+    <div
+      className={`flex items-center justify-center gap-3 ${className}`}
+      style={style}
+    >
+      <Sprig />
+      <p className="text-[0.72rem] uppercase tracking-[0.5em] text-plum">
+        {children}
+      </p>
+      <Sprig className="-scale-x-100" />
+    </div>
+  )
+}
+
+function Sprig({ className = '' }: { className?: string }) {
   return (
     <svg
-      className={`h-16 w-16 text-gold/40 ${className}`}
-      viewBox="0 0 64 64"
+      className={`h-3 w-8 text-gold ${className}`}
+      viewBox="0 0 32 12"
       fill="none"
       aria-hidden="true"
     >
+      <path d="M1 6h22" stroke="currentColor" strokeWidth="1" />
       <path
-        d="M2 2c18 0 30 12 30 30M2 12c14 0 22 8 22 22M2 22c10 0 14 4 14 14"
+        d="M23 6c3-2 5-2 8-4M23 6c3 2 5 2 8 4M17 6c1.5-1.5 3-1.5 5-3M17 6c1.5 1.5 3 1.5 5 3"
         stroke="currentColor"
-        strokeWidth="1.2"
+        strokeWidth="0.9"
       />
     </svg>
+  )
+}
+
+function Rule({ className = '' }: { className?: string }) {
+  return (
+    <span
+      className={`h-px w-full bg-gradient-to-r from-transparent to-violet/50 ${className}`}
+    />
   )
 }

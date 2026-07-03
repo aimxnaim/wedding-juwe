@@ -2,12 +2,14 @@ export type Wish = {
   _id: string
   name: string
   message: string
+  avatarSeed?: string
   createdAt: string
 }
 
 export type WishInput = {
   name: string
   message: string
+  avatarSeed?: string
 }
 
 const BASE = '/api/wishes'
