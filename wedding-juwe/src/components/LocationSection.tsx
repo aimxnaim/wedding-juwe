@@ -50,8 +50,8 @@ export default function LocationSection() {
                   href={WAZE_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 rounded-full border border-gold/50 px-4 py-2 text-xs uppercase
-                    tracking-[0.2em] text-violet transition hover:bg-gold/10"
+                  className="flex items-center gap-2 rounded-full bg-[#05C8F6] px-4 py-2 text-xs uppercase
+                    tracking-[0.2em] text-white transition hover:brightness-95"
                 >
                   <WazeIcon className="h-4 w-4" />
                   Waze
@@ -60,8 +60,8 @@ export default function LocationSection() {
                   href={GOOGLE_MAPS_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 rounded-full border border-gold/50 px-4 py-2 text-xs uppercase
-                    tracking-[0.2em] text-violet transition hover:bg-gold/10"
+                  className="flex items-center gap-2 rounded-full bg-[#4285F4] px-4 py-2 text-xs uppercase
+                    tracking-[0.2em] text-white transition hover:brightness-95"
                 >
                   <GoogleMapsIcon className="h-4 w-4" />
                   Google Maps
@@ -80,9 +80,9 @@ function WazeIcon({ className = '' }: { className?: string }) {
     <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
       <path
         d="M12 2C7.58 2 4 5.58 4 10c0 5.25 6.72 11.44 7 11.7a1 1 0 0 0 1.4 0C13 21.44 20 15.25 20 10c0-4.42-3.58-8-8-8Z"
-        fill="#05C8F6"
+        fill="#fff"
       />
-      <circle cx="12" cy="10" r="3" fill="#fff" />
+      <circle cx="12" cy="10" r="3" fill="#05C8F6" />
     </svg>
   )
 }
@@ -90,19 +90,11 @@ function WazeIcon({ className = '' }: { className?: string }) {
 function GoogleMapsIcon({ className = '' }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
-      <defs>
-        <linearGradient id="gmaps-pin" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#4285F4" />
-          <stop offset="35%" stopColor="#34A853" />
-          <stop offset="65%" stopColor="#FBBC05" />
-          <stop offset="100%" stopColor="#EA4335" />
-        </linearGradient>
-      </defs>
       <path
         d="M12 2C7.58 2 4 5.58 4 10c0 5.25 6.72 11.44 7 11.7a1 1 0 0 0 1.4 0C13 21.44 20 15.25 20 10c0-4.42-3.58-8-8-8Z"
-        fill="url(#gmaps-pin)"
+        fill="#fff"
       />
-      <circle cx="12" cy="10" r="3" fill="#fff" />
+      <circle cx="12" cy="10" r="3" fill="#4285F4" />
     </svg>
   )
 }
