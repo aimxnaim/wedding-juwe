@@ -126,7 +126,7 @@ export default function WishList({ wishes }: Props) {
             ref={(el) => {
               cardRefs.current[i] = el
             }}
-            className="animate-rise w-[78%] shrink-0 snap-center rounded-2xl border border-gold/30
+            className="animate-rise min-h-64 w-[78%] shrink-0 snap-center rounded-2xl border border-gold/30
               bg-ivory p-5 shadow-[0_10px_26px_-14px_rgba(30,35,82,0.3)]"
           >
             <div className="flex items-center gap-3">
