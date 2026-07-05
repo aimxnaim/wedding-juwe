@@ -42,7 +42,7 @@ export default function WishForm({ onCreated }: Props) {
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="flex flex-col items-center">
         <AvatarPicker name={name} value={avatarSeed} onChange={setAvatarSeed} />
-        <p className="mt-2 text-xs text-violet/50">Ketik untuk tukar avatar</p>
+        <p className="mt-2 text-xs text-violet/50">Ketik avatar untuk pilih yang anda suka</p>
       </div>
       <div>
         <label
