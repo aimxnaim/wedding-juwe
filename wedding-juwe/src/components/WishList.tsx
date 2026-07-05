@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
+import { FiRotateCcw } from 'react-icons/fi'
 import type { Wish } from '../api/wishes'
 import { avatarUrl } from '../lib/avatar'
 
@@ -109,20 +109,10 @@ export default function WishList({ wishes }: Props) {
     scheduleResume()
   }
 
-  return (
-    <div className="relative">
-      {wishes.length > 1 && (
-        <button
-          type="button"
-          aria-label="Ucapan sebelumnya"
-          onClick={() => goTo(active - 1)}
-          className="absolute left-0 top-1/2 z-10 -translate-y-1/2 rounded-full border border-gold/30
-            bg-ivory/90 p-1.5 text-gold shadow-[0_4px_12px_-6px_rgba(30,35,82,0.4)]"
-        >
-          <FiChevronLeft size={20} />
-        </button>
-      )}
+  const isLast = active === wishes.length - 1
 
+  return (
+    <div>
       <ul
         ref={trackRef}
         onPointerDown={pause}
@@ -153,16 +143,18 @@ export default function WishList({ wishes }: Props) {
         ))}
       </ul>
 
-      {wishes.length > 1 && (
-        <button
-          type="button"
-          aria-label="Ucapan seterusnya"
-          onClick={() => goTo(active + 1)}
-          className="absolute right-0 top-1/2 z-10 -translate-y-1/2 rounded-full border border-gold/30
-            bg-ivory/90 p-1.5 text-gold shadow-[0_4px_12px_-6px_rgba(30,35,82,0.4)]"
-        >
-          <FiChevronRight size={20} />
-        </button>
+      {wishes.length > 1 && isLast && (
+        <div className="mt-4 flex justify-center">
+          <button
+            type="button"
+            onClick={() => goTo(0)}
+            className="flex items-center gap-1.5 rounded-full border border-gold/30 bg-ivory px-4 py-1.5
+              text-sm font-medium text-gold shadow-[0_4px_12px_-6px_rgba(30,35,82,0.4)]"
+          >
+            <FiRotateCcw size={14} />
+            Kembali ke awal
+          </button>
+        </div>
       )}
 
       {wishes.length > 1 && (
