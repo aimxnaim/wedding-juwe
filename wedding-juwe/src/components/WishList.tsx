@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { FiRotateCcw } from 'react-icons/fi'
+import { FiClock, FiRotateCcw } from 'react-icons/fi'
 import type { Wish } from '../api/wishes'
 import { avatarUrl } from '../lib/avatar'
 
@@ -138,7 +138,10 @@ export default function WishList({ wishes }: Props) {
               />
               <div>
                 <p className="font-display text-xl text-violet">{wish.name}</p>
-                <p className="text-xs text-violet/50">{formatWishDate(wish.createdAt)}</p>
+                <p className="mt-0.5 flex items-center gap-1 text-[0.7rem] text-violet/70">
+                  <FiClock className="h-3 w-3 text-gold" aria-hidden="true" />
+                  {formatWishDate(wish.createdAt)}
+                </p>
               </div>
             </div>
             <WishMessage message={wish.message} />
