@@ -144,7 +144,7 @@ export default function WishList({ wishes }: Props) {
       </ul>
 
       {wishes.length > 1 && isLast && (
-        <div className="mt-4 flex justify-center">
+        <div className="animate-rise mt-4 flex justify-center">
           <button
             type="button"
             onClick={() => goTo(0)}
