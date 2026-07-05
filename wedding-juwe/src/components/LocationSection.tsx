@@ -51,7 +51,7 @@ export default function LocationSection() {
                   href={WAZE_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex flex-col items-center gap-2"
+                  className="flex w-28 flex-col items-center gap-2"
                 >
                   <span
                     className="flex h-14 w-14 items-center justify-center rounded-2xl border border-gold/40 bg-ivory
@@ -68,7 +68,7 @@ export default function LocationSection() {
                   href={GOOGLE_MAPS_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex flex-col items-center gap-2"
+                  className="flex w-28 flex-col items-center gap-2"
                 >
                   <span
                     className="flex h-14 w-14 items-center justify-center rounded-2xl border border-gold/40 bg-ivory
