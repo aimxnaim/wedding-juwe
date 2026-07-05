@@ -18,6 +18,14 @@ export default function App() {
           className="mx-auto w-40"
         />
         <p className="mt-3 text-xs uppercase tracking-[0.3em]">30 Ogos 2026</p>
+        <a
+          href="https://website-portfolio-sepia.vercel.app"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-4 block text-[0.65rem] tracking-wide text-cream/30 transition hover:text-cream/50"
+        >
+          Dibina oleh Aiman Naim
+        </a>
       </footer>
     </main>
   )
