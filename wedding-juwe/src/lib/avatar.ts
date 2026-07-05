@@ -40,6 +40,17 @@ const FACES: NonNullable<Options['face']> = [
   'tired',
 ]
 
+// Open Peeps' default accessories, minus eyepatch (also reads as one-eyed).
+const ACCESSORIES: NonNullable<Options['accessories']> = [
+  'glasses',
+  'glasses2',
+  'glasses3',
+  'glasses4',
+  'glasses5',
+  'sunglasses',
+  'sunglasses2',
+]
+
 // Cache generated data URIs so repeated renders of the same seed are free.
 const cache = new Map<string, string>()
 
@@ -53,6 +64,7 @@ export function avatarUrl(seed: string): string {
     seed: key,
     backgroundColor: THEME_BACKGROUNDS,
     face: FACES,
+    accessories: ACCESSORIES,
     radius: 50,
   }).toDataUri()
 
