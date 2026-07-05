@@ -13,16 +13,19 @@ export default function WishesSection() {
 
   useEffect(() => {
     let cancelled = false
+    let latestRequestId = 0
 
-    const refresh = () =>
-      getWishes()
+    const refresh = () => {
+      const requestId = ++latestRequestId
+      return getWishes()
         .then((data) => {
-          if (!cancelled) setWishes(data)
+          if (!cancelled && requestId === latestRequestId) setWishes(data)
         })
         .catch(() => {})
         .finally(() => {
           if (!cancelled) setLoading(false)
         })
+    }
 
     refresh()
 
