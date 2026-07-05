@@ -136,7 +136,10 @@ export default function WishList({ wishes }: Props) {
                 loading="lazy"
                 className="h-11 w-11 shrink-0 rounded-full border border-gold/50 bg-cream-deep"
               />
-              <p className="font-display text-xl text-violet">{wish.name}</p>
+              <div>
+                <p className="font-display text-xl text-violet">{wish.name}</p>
+                <p className="text-xs text-violet/50">{formatWishDate(wish.createdAt)}</p>
+              </div>
             </div>
             <WishMessage message={wish.message} />
           </li>
@@ -175,6 +178,19 @@ export default function WishList({ wishes }: Props) {
       )}
     </div>
   )
+}
+
+const wishDateFormatter = new Intl.DateTimeFormat('ms-MY', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  hour: 'numeric',
+  minute: '2-digit',
+})
+
+/** Formats a wish's timestamp, e.g. "5 Julai 2026 pada 3:45 PTG". */
+function formatWishDate(createdAt: string): string {
+  return wishDateFormatter.format(new Date(createdAt))
 }
 
 /**
