@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { FiRotateCcw } from 'react-icons/fi'
 import type { Wish } from '../api/wishes'
 import { avatarUrl } from '../lib/avatar'
 
@@ -102,6 +103,14 @@ export default function WishList({ wishes }: Props) {
     )
   }
 
+  function goTo(index: number) {
+    pause()
+    scrollToCard((index + wishes.length) % wishes.length)
+    scheduleResume()
+  }
+
+  const isLast = active === wishes.length - 1
+
   return (
     <div>
       <ul
@@ -117,7 +126,7 @@ export default function WishList({ wishes }: Props) {
             ref={(el) => {
               cardRefs.current[i] = el
             }}
-            className="animate-rise w-[78%] shrink-0 snap-center rounded-2xl border border-gold/30
+            className="animate-rise min-h-64 w-[78%] shrink-0 snap-center rounded-2xl border border-gold/30
               bg-ivory p-5 shadow-[0_10px_26px_-14px_rgba(30,35,82,0.3)]"
           >
             <div className="flex items-center gap-3">
@@ -134,6 +143,20 @@ export default function WishList({ wishes }: Props) {
         ))}
       </ul>
 
+      {wishes.length > 1 && isLast && (
+        <div className="animate-rise mt-4 flex justify-center">
+          <button
+            type="button"
+            onClick={() => goTo(0)}
+            className="flex items-center gap-1.5 rounded-full border border-gold/30 bg-ivory px-4 py-1.5
+              text-sm font-medium text-gold shadow-[0_4px_12px_-6px_rgba(30,35,82,0.4)]"
+          >
+            <FiRotateCcw size={14} />
+            Kembali ke awal
+          </button>
+        </div>
+      )}
+
       {wishes.length > 1 && (
         <div className="mt-4 flex justify-center gap-2">
           {wishes.map((wish, i) => (
@@ -142,11 +165,7 @@ export default function WishList({ wishes }: Props) {
               type="button"
               aria-label={`Ucapan ${i + 1}`}
               aria-current={i === active}
-              onClick={() => {
-                pause()
-                scrollToCard(i)
-                scheduleResume()
-              }}
+              onClick={() => goTo(i)}
               className={`h-1.5 rounded-full transition-all ${
                 i === active ? 'w-5 bg-gold' : 'w-1.5 bg-gold/30'
               }`}
