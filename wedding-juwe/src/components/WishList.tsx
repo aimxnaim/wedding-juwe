@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { FiRotateCcw } from 'react-icons/fi'
+import { FiClock, FiRotateCcw } from 'react-icons/fi'
 import type { Wish } from '../api/wishes'
 import { avatarUrl } from '../lib/avatar'
 
@@ -136,7 +136,13 @@ export default function WishList({ wishes }: Props) {
                 loading="lazy"
                 className="h-11 w-11 shrink-0 rounded-full border border-gold/50 bg-cream-deep"
               />
-              <p className="font-display text-xl text-violet">{wish.name}</p>
+              <div>
+                <p className="font-display text-xl text-violet">{wish.name}</p>
+                <p className="mt-0.5 flex items-center gap-1 text-[0.7rem] text-violet/70">
+                  <FiClock className="h-3 w-3 text-gold" aria-hidden="true" />
+                  {formatWishDate(wish.createdAt)}
+                </p>
+              </div>
             </div>
             <WishMessage message={wish.message} />
           </li>
@@ -175,6 +181,27 @@ export default function WishList({ wishes }: Props) {
       )}
     </div>
   )
+}
+
+const wishDayFormatter = new Intl.DateTimeFormat('ms-MY', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+})
+
+/** Malay day part for a given hour — pagi (morning), petang (afternoon/evening), malam (night). */
+function dayPart(hour: number): string {
+  if (hour < 12) return 'pagi'
+  if (hour < 19) return 'petang'
+  return 'malam'
+}
+
+/** Formats a wish's timestamp, e.g. "5 Julai 2026 pada 3:45 petang". */
+function formatWishDate(createdAt: string): string {
+  const date = new Date(createdAt)
+  const hour12 = date.getHours() % 12 || 12
+  const minutes = date.getMinutes().toString().padStart(2, '0')
+  return `${wishDayFormatter.format(date)} pada ${hour12}:${minutes} ${dayPart(date.getHours())}`
 }
 
 /**

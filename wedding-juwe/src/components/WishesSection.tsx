@@ -72,9 +72,16 @@ export default function WishesSection() {
           ) : (
             <>
               {wishes.length > 0 && (
-                <p className="mb-5 text-center text-sm uppercase tracking-[0.3em] text-gold">
-                  {wishes.length} Ucapan
-                </p>
+                <div className="mb-5 flex items-center justify-center gap-2.5">
+                  <span className="h-px w-8 bg-gradient-to-r from-transparent to-gold/50" />
+                  <span
+                    className="rounded-full border border-gold/40 bg-ivory px-4 py-1.5 text-xs
+                      uppercase tracking-[0.25em] text-violet/80 shadow-sm"
+                  >
+                    {wishes.length} Ucapan
+                  </span>
+                  <span className="h-px w-8 bg-gradient-to-l from-transparent to-gold/50" />
+                </div>
               )}
               <WishList wishes={wishes} />
             </>
