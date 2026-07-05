@@ -1,5 +1,4 @@
 import arabicNames from '../assets/arabic-names.webp'
-import CornerFlorals from './CornerFlorals'
 import FloatingAccents from './FloatingAccents'
 import Monogram from './Monogram'
 
@@ -7,8 +6,6 @@ export default function Hero() {
   return (
     <header className="relative overflow-hidden bg-paper px-7 pb-16 pt-14 text-center text-violet">
       <FloatingAccents />
-      {/* gold-and-plum floral spray anchored bottom-right, echoing the reference */}
-      <CornerFlorals corners={['br']} className="w-24 sm:w-28" />
 
       {/* violet double-hairline frame */}
       <div className="pointer-events-none absolute inset-3 rounded-[1.9rem] border border-violet/45" />
