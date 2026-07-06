@@ -111,11 +111,14 @@ is removed — no longer used.
   ```
   `VIDEO_ID_1`/`2`/`3` are placeholders; the user supplies real ids later
   by editing this array only — no other code changes.
-- A single hidden (`className="hidden"`) `<div>` is mounted once as the
-  host element for one `window.YT.Player` instance (YouTube IFrame Player
-  API), created after dynamically injecting the
-  `https://www.youtube.com/iframe_api` script tag (skipped if already
-  present, so this stays safe if the component were ever mounted twice).
+- A single hidden (`className="hidden"`, i.e. `display: none`) `<div>`
+  is mounted once as the host element for one `window.YT.Player`
+  instance (YouTube IFrame Player API), created after dynamically
+  injecting the `https://www.youtube.com/iframe_api` script tag (skipped
+  if already present, so this stays safe if the component were ever
+  mounted twice). `display: none` does not interfere with the player's
+  ability to initialize or play — confirmed directly (see debugging
+  note below).
   `playerVars: { controls: 0, disablekb: 1 }` hides YouTube's own UI
   chrome entirely — the site's existing custom controls are the only UI
   the guest sees.
@@ -145,6 +148,15 @@ is removed — no longer used.
   API with an invalid id; no special error handling is added for this —
   same "silent no-op during setup" posture as the original missing-MP3
   case.
+- **Debugging note:** while wiring this up, an "Invalid video id" runtime
+  error was chased down to a mistyped 12-character placeholder test ID
+  (one character too many — real YouTube video ids are always 11
+  characters). It was initially misattributed to the hidden host div's
+  `display: none`, and the div was briefly changed to an off-screen
+  `absolute`/`opacity-0` position as a workaround. That hypothesis was
+  re-tested in isolation with a correct-length id and disproved — the
+  player initializes fine under `display: none`. The workaround was
+  reverted; the fix was correcting the video id, nothing else.
 
 ## Testing
 

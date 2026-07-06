@@ -143,15 +143,7 @@ export default function MusicPlayer() {
 
   return (
     <div className="fixed right-5 bottom-5 z-50">
-      {/* display:none breaks the YouTube iframe player's ability to
-          initialize/play — position it off-screen instead so it stays
-          rendered (and audible) while remaining invisible. */}
-      <div
-        ref={hostRef}
-        className="pointer-events-none absolute h-px w-px overflow-hidden opacity-0"
-        style={{ left: '-9999px' }}
-        aria-hidden="true"
-      />
+      <div ref={hostRef} className="hidden" aria-hidden="true" />
 
       {isOpen && (
         <div
