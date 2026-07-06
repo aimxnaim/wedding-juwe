@@ -2,6 +2,7 @@ import arabicNamesGold from './assets/arabic-names-gold.webp'
 import CountdownSection from './components/CountdownSection'
 import Hero from './components/Hero'
 import LocationSection from './components/LocationSection'
+import MusicPlayer from './components/MusicPlayer'
 import WishesSection from './components/WishesSection'
 
 export default function App() {
@@ -11,6 +12,7 @@ export default function App() {
       <CountdownSection />
       <LocationSection />
       <WishesSection />
+      <MusicPlayer />
       <footer className="bg-violet-deep py-7 text-center text-cream/60">
         <img
           src={arabicNamesGold}
