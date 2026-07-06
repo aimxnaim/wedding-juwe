@@ -179,7 +179,7 @@ Unchanged position/material (`rounded-full border-gold/40 bg-ivory`
 button, bottom-right). Icon swaps based on `isPlaying`:
 - Paused: static `FiMusic` (unchanged from before).
 - Playing: 3 thin vertical bar `<span>`s, each animated with a new
-  `barBounce` CSS keyframe (scaleY oscillating between ~30% and 100%),
+  `eqBar` CSS keyframe (scaleY oscillating between ~30% and 100%),
   staggered via `animation-delay` (0s / 0.2s / 0.4s) so they don't move
   in lockstep. Bars use `bg-gold`. This fully replaces `.animate-disc-spin`
   (removed from `index.css`, along with the `@keyframes discSpin` rule and
