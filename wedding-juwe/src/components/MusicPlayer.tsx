@@ -12,9 +12,9 @@ import {
 // Replace with real YouTube video IDs (the 11-character id in a share link,
 // e.g. https://youtu.be/XXXXXXXXXXX or ...watch?v=XXXXXXXXXXX).
 const TRACKS = [
-  { title: 'Lagu 1', videoId: 'VIDEO_ID_1' },
-  { title: 'Lagu 2', videoId: 'VIDEO_ID_2' },
-  { title: 'Lagu 3', videoId: 'VIDEO_ID_3' },
+  { title: 'Lagu 1', videoId: 'SojAkORca9g' },
+  { title: 'Lagu 2', videoId: 'tX73H2FRcK8' },
+  { title: 'Lagu 3', videoId: 'pAbhAmOxGfc' },
 ]
 
 const DEFAULT_VOLUME = 0.6
