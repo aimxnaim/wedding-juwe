@@ -147,36 +147,34 @@ export default function MusicPlayer() {
 
       {isOpen && (
         <div
-          className="mb-3 w-64 rounded-3xl border border-gold/40 bg-ivory p-5 text-violet
-            shadow-[0_18px_40px_-18px_rgba(30,35,82,0.35)] ring-1 ring-inset ring-gold/15"
+          className="mb-3 flex max-w-[300px] items-center gap-3 rounded-full border
+            border-gold/40 bg-ivory px-4 py-2.5 text-violet shadow-[0_18px_40px_-18px_rgba(30,35,82,0.35)]
+            ring-1 ring-inset ring-gold/15"
         >
-          <p className="text-center font-display text-lg text-violet">
+          <p className="max-w-[72px] truncate font-display text-sm text-violet">
             {TRACKS[trackIndex].title}
           </p>
-          <p className="mt-0.5 text-center text-[0.65rem] uppercase tracking-[0.3em] text-plum">
-            {trackIndex + 1} / {TRACKS.length}
-          </p>
 
-          <div className="mt-4 flex items-center justify-center gap-4">
+          <div className="flex items-center gap-2">
             <button
               type="button"
               aria-label="Lagu sebelum"
               onClick={() => goToTrack(trackIndex - 1)}
               className="text-violet/70 transition hover:text-violet"
             >
-              <FiSkipBack size={18} />
+              <FiSkipBack size={16} />
             </button>
             <button
               type="button"
               aria-label={isPlaying ? 'Jeda muzik' : 'Main muzik'}
               onClick={togglePlay}
-              className="flex h-11 w-11 items-center justify-center rounded-full bg-gold
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-gold
                 text-ivory shadow-md transition hover:bg-gold/90"
             >
               {isPlaying ? (
-                <FiPause size={20} />
+                <FiPause size={16} />
               ) : (
-                <FiPlay size={20} className="ml-0.5" />
+                <FiPlay size={16} className="ml-0.5" />
               )}
             </button>
             <button
@@ -185,18 +183,18 @@ export default function MusicPlayer() {
               onClick={() => goToTrack(trackIndex + 1)}
               className="text-violet/70 transition hover:text-violet"
             >
-              <FiSkipForward size={18} />
+              <FiSkipForward size={16} />
             </button>
           </div>
 
-          <div className="mt-4 flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <button
               type="button"
               aria-label={volume === 0 ? 'Bunyikan' : 'Diamkan'}
               onClick={toggleMute}
               className="text-violet/70 transition hover:text-violet"
             >
-              {volume === 0 ? <FiVolumeX size={16} /> : <FiVolume2 size={16} />}
+              {volume === 0 ? <FiVolumeX size={14} /> : <FiVolume2 size={14} />}
             </button>
             <input
               type="range"
@@ -206,7 +204,7 @@ export default function MusicPlayer() {
               value={volume}
               onChange={(event) => updateVolume(Number(event.target.value))}
               aria-label="Kelantangan"
-              className="h-1 flex-1 accent-gold"
+              className="h-1 w-14 accent-gold"
             />
           </div>
         </div>
@@ -219,8 +217,27 @@ export default function MusicPlayer() {
         className="flex h-14 w-14 items-center justify-center rounded-full border border-gold/40
           bg-ivory text-violet shadow-[0_18px_40px_-18px_rgba(30,35,82,0.35)] ring-1 ring-inset ring-gold/15"
       >
-        <FiMusic size={22} className={isPlaying ? 'animate-disc-spin' : ''} />
+        {isPlaying ? <EqualizerBars /> : <FiMusic size={22} />}
       </button>
     </div>
+  )
+}
+
+function EqualizerBars() {
+  return (
+    <span className="flex h-5 items-end gap-1" aria-hidden="true">
+      <span
+        className="animate-eq-bar h-full w-1 rounded-full bg-gold"
+        style={{ animationDelay: '0s' }}
+      />
+      <span
+        className="animate-eq-bar h-full w-1 rounded-full bg-gold"
+        style={{ animationDelay: '0.2s' }}
+      />
+      <span
+        className="animate-eq-bar h-full w-1 rounded-full bg-gold"
+        style={{ animationDelay: '0.4s' }}
+      />
+    </span>
   )
 }
