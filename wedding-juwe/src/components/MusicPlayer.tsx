@@ -9,68 +9,149 @@ import {
   FiVolumeX,
 } from 'react-icons/fi'
 
+// Replace with real YouTube video IDs (the 11-character id in a share link,
+// e.g. https://youtu.be/XXXXXXXXXXX or ...watch?v=XXXXXXXXXXX).
 const TRACKS = [
-  { title: 'Lagu 1', src: '/audio/song-1.mp3' },
-  { title: 'Lagu 2', src: '/audio/song-2.mp3' },
-  { title: 'Lagu 3', src: '/audio/song-3.mp3' },
+  { title: 'Lagu 1', videoId: 'VIDEO_ID_1' },
+  { title: 'Lagu 2', videoId: 'VIDEO_ID_2' },
+  { title: 'Lagu 3', videoId: 'VIDEO_ID_3' },
 ]
 
 const DEFAULT_VOLUME = 0.6
 
+/** Minimal shape of the pieces of the YouTube IFrame Player API this
+ * component uses — kept local so no @types/youtube dependency is needed. */
+type YouTubePlayer = {
+  playVideo(): void
+  pauseVideo(): void
+  cueVideoById(videoId: string): void
+  loadVideoById(videoId: string): void
+  setVolume(volume: number): void
+}
+
+type YouTubePlayerEvent = { data: number; target: YouTubePlayer }
+
+declare global {
+  interface Window {
+    YT?: {
+      Player: new (
+        element: HTMLElement,
+        options: {
+          videoId: string
+          playerVars?: Record<string, number>
+          events?: {
+            onReady?: (event: YouTubePlayerEvent) => void
+            onStateChange?: (event: YouTubePlayerEvent) => void
+          }
+        },
+      ) => YouTubePlayer
+      PlayerState: { ENDED: number; PLAYING: number; PAUSED: number }
+    }
+    onYouTubeIframeAPIReady?: () => void
+  }
+}
+
 export default function MusicPlayer() {
-  const audioRef = useRef<HTMLAudioElement>(null)
+  const hostRef = useRef<HTMLDivElement>(null)
+  const playerRef = useRef<YouTubePlayer | null>(null)
+  const trackIndexRef = useRef(0)
+
   const [isOpen, setIsOpen] = useState(false)
   const [trackIndex, setTrackIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const [volume, setVolume] = useState(DEFAULT_VOLUME)
 
-  useEffect(() => {
-    const audio = audioRef.current
-    if (!audio) return
-    audio.volume = volume
-  }, [volume])
+  trackIndexRef.current = trackIndex
 
+  // Loads the YouTube IFrame API script once and creates a single hidden
+  // player instance backing all three tracks. onStateChange is the source
+  // of truth for isPlaying — the API's own play/pause is async, so we
+  // reflect its reported state rather than guessing ahead of it.
   useEffect(() => {
-    const audio = audioRef.current
-    if (!audio) return
-    audio.src = TRACKS[trackIndex].src
-    if (isPlaying) {
-      audio.play().catch(() => {})
+    function createPlayer() {
+      if (!hostRef.current || playerRef.current || !window.YT) return
+      playerRef.current = new window.YT.Player(hostRef.current, {
+        videoId: TRACKS[0].videoId,
+        playerVars: { controls: 0, disablekb: 1 },
+        events: {
+          onReady: (event) => {
+            event.target.setVolume(volume * 100)
+          },
+          onStateChange: (event) => {
+            const { PLAYING, PAUSED, ENDED } = window.YT!.PlayerState
+            if (event.data === PLAYING) {
+              setIsPlaying(true)
+            } else if (event.data === PAUSED) {
+              setIsPlaying(false)
+            } else if (event.data === ENDED) {
+              const next = (trackIndexRef.current + 1) % TRACKS.length
+              setTrackIndex(next)
+              event.target.loadVideoById(TRACKS[next].videoId)
+            }
+          },
+        },
+      })
     }
-    // isPlaying is intentionally read (not listed as a dep): this effect
-    // should only re-run on track change, carrying forward whatever the
-    // play state already is at that point.
+
+    if (window.YT?.Player) {
+      createPlayer()
+    } else {
+      const previousCallback = window.onYouTubeIframeAPIReady
+      window.onYouTubeIframeAPIReady = () => {
+        previousCallback?.()
+        createPlayer()
+      }
+      if (!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')) {
+        const tag = document.createElement('script')
+        tag.src = 'https://www.youtube.com/iframe_api'
+        document.body.appendChild(tag)
+      }
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [trackIndex])
+  }, [])
 
   function togglePlay() {
-    const audio = audioRef.current
-    if (!audio) return
+    const player = playerRef.current
+    if (!player) return
     if (isPlaying) {
-      audio.pause()
-      setIsPlaying(false)
+      player.pauseVideo()
     } else {
-      audio.play().catch(() => {})
-      setIsPlaying(true)
+      player.playVideo()
     }
   }
 
   function goToTrack(nextIndex: number) {
-    setTrackIndex((nextIndex + TRACKS.length) % TRACKS.length)
+    const wrapped = (nextIndex + TRACKS.length) % TRACKS.length
+    setTrackIndex(wrapped)
+    const player = playerRef.current
+    if (!player) return
+    if (isPlaying) {
+      player.loadVideoById(TRACKS[wrapped].videoId)
+    } else {
+      player.cueVideoById(TRACKS[wrapped].videoId)
+    }
   }
 
-  function handleEnded() {
-    goToTrack(trackIndex + 1)
-    setIsPlaying(true)
+  function updateVolume(next: number) {
+    setVolume(next)
+    playerRef.current?.setVolume(next * 100)
   }
 
   function toggleMute() {
-    setVolume((current) => (current === 0 ? DEFAULT_VOLUME : 0))
+    updateVolume(volume === 0 ? DEFAULT_VOLUME : 0)
   }
 
   return (
     <div className="fixed right-5 bottom-5 z-50">
-      <audio ref={audioRef} onEnded={handleEnded} />
+      {/* display:none breaks the YouTube iframe player's ability to
+          initialize/play — position it off-screen instead so it stays
+          rendered (and audible) while remaining invisible. */}
+      <div
+        ref={hostRef}
+        className="pointer-events-none absolute h-px w-px overflow-hidden opacity-0"
+        style={{ left: '-9999px' }}
+        aria-hidden="true"
+      />
 
       {isOpen && (
         <div
@@ -131,7 +212,7 @@ export default function MusicPlayer() {
               max={1}
               step={0.01}
               value={volume}
-              onChange={(event) => setVolume(Number(event.target.value))}
+              onChange={(event) => updateVolume(Number(event.target.value))}
               aria-label="Kelantangan"
               className="h-1 flex-1 accent-gold"
             />
