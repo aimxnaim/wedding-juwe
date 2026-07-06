@@ -214,15 +214,119 @@ This addendum is a visual-only restyle of `MusicPlayer.tsx`'s JSX/classes
 plus one CSS swap (disc-spin → equalizer bars) — no changes to the
 YouTube IFrame Player wiring from Addendum 1.
 
+## Addendum 3: Vinyl-record disc redesign (supersedes Addendum 2)
+
+User feedback after seeing the pill: still "not appealing," and the
+floating widget appearing over different, changing page content while
+scrolling read as it "suddenly jumping to the middle" — an inherent
+side effect of any `position: fixed` corner widget, not something
+specific to the pill shape. Explored via the visual brainstorming
+companion (mockups + a live interactive HTML demo); user confirmed a
+concrete direction: a vinyl-record aesthetic that grows into a circle on
+tap, decided after clicking through options in the companion tool
+(session log: `.superpowers/brainstorm/` mockups, not committed —
+gitignored scratch). Confirmed choice was to **keep** the floating
+corner widget (not switch to a full-width bar).
+
+This fully replaces Addendum 2's pill and equalizer bars. The disc
+rotating while playing is itself the "now playing" signal — no separate
+equalizer bars needed.
+
+### Collapsed state — vinyl disc
+
+Same footprint and position as before (`h-14 w-14`, i.e. 56px, fixed
+bottom-right). Restyled to look like a small vinyl record instead of a
+plain ivory circle:
+- Background: `repeating-radial-gradient(circle at center, <violet-deep>
+  0px, <violet-deep> 3px, <violet> 3px, <violet> 6px)` — fine dark
+  concentric grooves, using the existing `--color-violet-deep` /
+  `--color-violet` tokens.
+- A small center "label" circle (~30px), `bg-gold-soft` with a
+  `ring-gold` border and a tiny dark center dot (`bg-violet-deep`),
+  matching a real record's paper label + spindle hole.
+- While playing, the whole disc rotates continuously (reintroduces a
+  `discSpin`-equivalent keyframe — reusing the same rotation mechanism
+  Addendum 1 originally had, now applied to a disc that actually looks
+  like a record, so the metaphor lands correctly this time). Respects
+  `prefers-reduced-motion: reduce` the same way the original
+  `.animate-disc-spin` did.
+- The center label fades out (`opacity` transition) as the disc expands,
+  since the label doesn't make sense once controls take over that space.
+
+### Expanded state — clock-face circle
+
+Tapping the disc grows it in place (CSS `width`/`height` transition,
+~400ms, `cubic-bezier(0.22, 1, 0.36, 1)` — the same easing curve already
+used by `.animate-crest` elsewhere in `index.css`, so the motion feels
+consistent with the rest of the site) into a modestly-sized circle —
+**168px diameter** (roughly 3× the collapsed size; deliberately much
+smaller than the 220px used in the throwaway brainstorming demo, per
+explicit user instruction to keep it "nice," not oversized). Background
+switches from the dark grooved disc to `bg-ivory` with the same
+`border-gold/40 ring-1 ring-inset ring-gold/15` material used elsewhere
+on the site, so the expanded state matches the site's card language
+while the collapsed state keeps the vinyl look.
+
+Controls are arranged radially ("clock-face" layout), confirmed as the
+preferred option over a plain stacked-center or big-center-play layout:
+- **12 o'clock:** truncated track title (`font-display text-xs
+  text-violet`), absolutely positioned near the top edge.
+- **9 o'clock / 3 o'clock:** `FiSkipBack` / `FiSkipForward`, vertically
+  centered at the left/right edges.
+- **Center:** play/pause button, gold filled circle, the visual anchor
+  of the whole layout (largest single element).
+- **6 o'clock:** volume control, **not** a drag slider (confirmed
+  against a curved arc-dial alternative and a tiny straight-slider
+  alternative — both rejected as more fiddly/less fitting) — instead a
+  tap **−** / **+** step control with a small 5-segment bar indicator
+  showing the current discrete level. 6 levels total (0 through 5,
+  i.e. 0%/20%/40%/60%/80%/100%); default level **3** (60%), preserving
+  the existing `DEFAULT_VOLUME = 0.6` default exactly. Each tap moves
+  one level and calls `player.setVolume(level * 20)` (YouTube's 0–100
+  range), clamped to `[0, 5]`.
+
+### Closing the expanded circle
+
+Two ways to close, both required:
+1. An explicit small **×** close button (`FiX`, `text-plum`) in the
+   corner of the expanded circle (top-right).
+2. Tapping **anywhere outside** the widget's bounding box (a
+   document-level click listener that closes the circle if the click
+   target isn't inside the widget's root `<div>`) — explicitly requested
+   by the user as an additional, more discoverable way to dismiss it,
+   since with the circle mostly filled by controls there's little empty
+   "background" area left to tap inside it.
+
+Tapping the collapsed disc still opens it, same as before (unchanged
+toggle-on-tap-the-button semantics for opening).
+
+### Data model changes
+
+Volume moves from a continuous `0–1` float (driven by a range `<input>`)
+to a discrete integer level `0–5` (driven by tap +/-). The conversion to
+YouTube's `setVolume` call becomes `level * 20` instead of
+`volume * 100`. `DEFAULT_VOLUME` becomes `const DEFAULT_LEVEL = 3`.
+Mute is dropped as a separate concept — tapping **−** down to level `0`
+already achieves silence, so a dedicated mute toggle is redundant and
+removed (YAGNI once volume is already discrete step-based).
+
+All other logic from Addendum 1 (YouTube IFrame Player wiring,
+`togglePlay`, `goToTrack`'s `loadVideoById`/`cueVideoById` split, ENDED
+auto-advance) is unchanged.
+
 ## Testing
 
-- Manual verification: tap play/pause, confirm the button shows pulsing
-  equalizer bars while playing and the static note icon while paused;
-  open the pill and confirm it renders as a single compact row without
-  overlapping surrounding page content awkwardly; drag the volume slider
-  and confirm the level updates; use Next/Prev to cycle through all 3
-  tracks including wraparound at both ends; let a track play to
-  completion and confirm it auto-advances; check the bars freeze to a
-  static state under `prefers-reduced-motion: reduce`.
+- Manual verification: tap the collapsed disc, confirm it grows smoothly
+  into the 168px circle (not an abrupt jump) and the center label fades
+  out; confirm the clock-face layout (title top, prev/next sides, play
+  center, volume bottom) doesn't overlap or clip at that size; tap +/-
+  and confirm the bar indicator updates and moves in 6 discrete steps
+  (0–5) with real volume changes audible; tap the × button and confirm it
+  closes; reopen and tap outside the widget and confirm that also
+  closes; tap play and confirm the *collapsed* disc rotates continuously
+  once closed while playing, and stops rotating when paused; check the
+  rotation freezes under `prefers-reduced-motion: reduce`; use Next/Prev
+  to confirm wraparound at both ends; let a track play to completion and
+  confirm ENDED auto-advance still works.
 - No unit test framework currently present in the project; scope does not
   warrant introducing one for this widget.
