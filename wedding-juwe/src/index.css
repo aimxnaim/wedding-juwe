@@ -244,23 +244,30 @@ body {
   animation: twinkle ease-in-out infinite both;
 }
 
-/* pulsing equalizer bars on the music-player button while a track plays;
-   each bar gets a staggered animation-delay (set inline per-bar) so they
-   don't move in lockstep. Decorative only — not reactive to real audio,
-   since the audio plays through a cross-origin YouTube iframe. */
-@keyframes eqBar {
-  0%,
-  100% {
-    transform: scaleY(0.3);
+/* dark concentric-groove background for the collapsed music-player
+   button, styled to look like a small vinyl record */
+.bg-vinyl-grooves {
+  background: repeating-radial-gradient(
+    circle at center,
+    var(--color-violet-deep) 0px,
+    var(--color-violet-deep) 3px,
+    var(--color-violet) 3px,
+    var(--color-violet) 6px
+  );
+}
+
+/* continuous rotation for the collapsed vinyl disc while a track plays */
+@keyframes vinylSpin {
+  from {
+    transform: rotate(0deg);
   }
-  50% {
-    transform: scaleY(1);
+  to {
+    transform: rotate(360deg);
   }
 }
 
-.animate-eq-bar {
-  animation: eqBar 0.9s ease-in-out infinite;
-  transform-origin: bottom;
+.animate-vinyl-spin {
+  animation: vinylSpin 3s linear infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -268,7 +275,7 @@ body {
   .animate-crest,
   .animate-rise,
   .animate-celebrate-glow,
-  .animate-eq-bar,
+  .animate-vinyl-spin,
   .reveal {
     animation: none !important;
     opacity: 1 !important;
