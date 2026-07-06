@@ -1,13 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import {
-  FiMusic,
-  FiPause,
-  FiPlay,
-  FiSkipBack,
-  FiSkipForward,
-  FiVolume2,
-  FiVolumeX,
-} from 'react-icons/fi'
+import { FiPause, FiPlay, FiSkipBack, FiSkipForward, FiX } from 'react-icons/fi'
 
 // Replace with real YouTube video IDs (the 11-character id in a share link,
 // e.g. https://youtu.be/XXXXXXXXXXX or ...watch?v=XXXXXXXXXXX).
@@ -17,7 +9,8 @@ const TRACKS = [
   { title: 'Lagu 3', videoId: 'pAbhAmOxGfc' },
 ]
 
-const DEFAULT_VOLUME = 0.6
+const DEFAULT_LEVEL = 3
+const VOLUME_LEVELS = [1, 2, 3, 4, 5]
 
 /** Minimal shape of the pieces of the YouTube IFrame Player API this
  * component uses — kept local so no @types/youtube dependency is needed. */
@@ -52,6 +45,7 @@ declare global {
 }
 
 export default function MusicPlayer() {
+  const containerRef = useRef<HTMLDivElement>(null)
   const hostRef = useRef<HTMLDivElement>(null)
   const playerRef = useRef<YouTubePlayer | null>(null)
   const trackIndexRef = useRef(0)
@@ -59,7 +53,7 @@ export default function MusicPlayer() {
   const [isOpen, setIsOpen] = useState(false)
   const [trackIndex, setTrackIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
-  const [volume, setVolume] = useState(DEFAULT_VOLUME)
+  const [volumeLevel, setVolumeLevel] = useState(DEFAULT_LEVEL)
 
   trackIndexRef.current = trackIndex
 
@@ -75,7 +69,7 @@ export default function MusicPlayer() {
         playerVars: { controls: 0, disablekb: 1 },
         events: {
           onReady: (event) => {
-            event.target.setVolume(volume * 100)
+            event.target.setVolume(DEFAULT_LEVEL * 20)
           },
           onStateChange: (event) => {
             const { PLAYING, PAUSED, ENDED } = window.YT!.PlayerState
@@ -110,6 +104,18 @@ export default function MusicPlayer() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Closes the expanded circle when the guest taps anywhere outside it.
+  useEffect(() => {
+    if (!isOpen) return
+    function handleOutsideClick(event: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleOutsideClick)
+    return () => document.removeEventListener('mousedown', handleOutsideClick)
+  }, [isOpen])
+
   function togglePlay() {
     const player = playerRef.current
     if (!player) return
@@ -132,112 +138,124 @@ export default function MusicPlayer() {
     }
   }
 
-  function updateVolume(next: number) {
-    setVolume(next)
-    playerRef.current?.setVolume(next * 100)
-  }
-
-  function toggleMute() {
-    updateVolume(volume === 0 ? DEFAULT_VOLUME : 0)
+  function adjustVolume(delta: number) {
+    setVolumeLevel((current) => {
+      const next = Math.max(0, Math.min(5, current + delta))
+      playerRef.current?.setVolume(next * 20)
+      return next
+    })
   }
 
   return (
-    <div className="fixed right-5 bottom-5 z-50">
+    <div
+      ref={containerRef}
+      role={isOpen ? undefined : 'button'}
+      tabIndex={isOpen ? undefined : 0}
+      aria-label={isOpen ? undefined : 'Buka pemain muzik'}
+      onClick={!isOpen ? () => setIsOpen(true) : undefined}
+      onKeyDown={
+        !isOpen
+          ? (event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault()
+                setIsOpen(true)
+              }
+            }
+          : undefined
+      }
+      className={`fixed right-5 bottom-5 z-50 rounded-full shadow-[0_18px_40px_-18px_rgba(30,35,82,0.35)]
+        transition-[width,height] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]
+        ${
+          isOpen
+            ? 'h-[10.5rem] w-[10.5rem] cursor-default border border-gold/40 bg-ivory ring-1 ring-inset ring-gold/15'
+            : 'h-14 w-14 cursor-pointer bg-vinyl-grooves'
+        }
+        ${isPlaying && !isOpen ? 'animate-vinyl-spin' : ''}`}
+    >
       <div ref={hostRef} className="hidden" aria-hidden="true" />
 
-      {isOpen && (
-        <div
-          className="mb-3 flex max-w-[300px] items-center gap-3 rounded-full border
-            border-gold/40 bg-ivory px-4 py-2.5 text-violet shadow-[0_18px_40px_-18px_rgba(30,35,82,0.35)]
-            ring-1 ring-inset ring-gold/15"
-        >
-          <p className="max-w-[72px] truncate font-display text-sm text-violet">
-            {TRACKS[trackIndex].title}
-          </p>
-
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              aria-label="Lagu sebelum"
-              onClick={() => goToTrack(trackIndex - 1)}
-              className="text-violet/70 transition hover:text-violet"
-            >
-              <FiSkipBack size={16} />
-            </button>
-            <button
-              type="button"
-              aria-label={isPlaying ? 'Jeda muzik' : 'Main muzik'}
-              onClick={togglePlay}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-gold
-                text-ivory shadow-md transition hover:bg-gold/90"
-            >
-              {isPlaying ? (
-                <FiPause size={16} />
-              ) : (
-                <FiPlay size={16} className="ml-0.5" />
-              )}
-            </button>
-            <button
-              type="button"
-              aria-label="Lagu seterusnya"
-              onClick={() => goToTrack(trackIndex + 1)}
-              className="text-violet/70 transition hover:text-violet"
-            >
-              <FiSkipForward size={16} />
-            </button>
-          </div>
-
-          <div className="flex items-center gap-1.5">
-            <button
-              type="button"
-              aria-label={volume === 0 ? 'Bunyikan' : 'Diamkan'}
-              onClick={toggleMute}
-              className="text-violet/70 transition hover:text-violet"
-            >
-              {volume === 0 ? <FiVolumeX size={14} /> : <FiVolume2 size={14} />}
-            </button>
-            <input
-              type="range"
-              min={0}
-              max={1}
-              step={0.01}
-              value={volume}
-              onChange={(event) => updateVolume(Number(event.target.value))}
-              aria-label="Kelantangan"
-              className="h-1 w-14 accent-gold"
-            />
-          </div>
-        </div>
-      )}
-
-      <button
-        type="button"
-        aria-label={isOpen ? 'Tutup pemain muzik' : 'Buka pemain muzik'}
-        onClick={() => setIsOpen((open) => !open)}
-        className="flex h-14 w-14 items-center justify-center rounded-full border border-gold/40
-          bg-ivory text-violet shadow-[0_18px_40px_-18px_rgba(30,35,82,0.35)] ring-1 ring-inset ring-gold/15"
+      <div
+        aria-hidden="true"
+        className={`absolute top-1/2 left-1/2 flex h-[30px] w-[30px] -translate-x-1/2 -translate-y-1/2
+          items-center justify-center rounded-full bg-gold-soft ring-2 ring-gold transition-opacity
+          duration-200 ${isOpen ? 'pointer-events-none opacity-0' : 'opacity-100'}`}
       >
-        {isPlaying ? <EqualizerBars /> : <FiMusic size={22} />}
-      </button>
-    </div>
-  )
-}
+        <span className="h-1.5 w-1.5 rounded-full bg-violet-deep" />
+      </div>
 
-function EqualizerBars() {
-  return (
-    <span className="flex h-5 items-end gap-1" aria-hidden="true">
-      <span
-        className="animate-eq-bar h-full w-1 rounded-full bg-gold"
-        style={{ animationDelay: '0s' }}
-      />
-      <span
-        className="animate-eq-bar h-full w-1 rounded-full bg-gold"
-        style={{ animationDelay: '0.2s' }}
-      />
-      <span
-        className="animate-eq-bar h-full w-1 rounded-full bg-gold"
-        style={{ animationDelay: '0.4s' }}
-      />
-    </span>
+      <div
+        inert={!isOpen}
+        className={`absolute inset-0 delay-100 transition-opacity duration-300
+          ${isOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'}`}
+      >
+        <button
+          type="button"
+          aria-label="Tutup pemain muzik"
+          onClick={() => setIsOpen(false)}
+          className="absolute top-3 right-3 text-plum transition hover:text-violet"
+        >
+          <FiX size={16} />
+        </button>
+
+        <p className="absolute top-6 left-1/2 max-w-[110px] -translate-x-1/2 truncate text-center font-display text-xs text-violet">
+          {TRACKS[trackIndex].title}
+        </p>
+
+        <button
+          type="button"
+          aria-label="Lagu sebelum"
+          onClick={() => goToTrack(trackIndex - 1)}
+          className="absolute top-1/2 left-4 -translate-y-1/2 text-violet/70 transition hover:text-violet"
+        >
+          <FiSkipBack size={18} />
+        </button>
+
+        <button
+          type="button"
+          aria-label={isPlaying ? 'Jeda muzik' : 'Main muzik'}
+          onClick={togglePlay}
+          className="absolute top-1/2 left-1/2 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2
+            items-center justify-center rounded-full bg-gold text-ivory shadow-md transition hover:bg-gold/90"
+        >
+          {isPlaying ? <FiPause size={22} /> : <FiPlay size={22} className="ml-0.5" />}
+        </button>
+
+        <button
+          type="button"
+          aria-label="Lagu seterusnya"
+          onClick={() => goToTrack(trackIndex + 1)}
+          className="absolute top-1/2 right-4 -translate-y-1/2 text-violet/70 transition hover:text-violet"
+        >
+          <FiSkipForward size={18} />
+        </button>
+
+        <div className="absolute bottom-5 left-1/2 flex -translate-x-1/2 items-center gap-2">
+          <button
+            type="button"
+            aria-label="Kurangkan kelantangan"
+            onClick={() => adjustVolume(-1)}
+            className="flex h-5 w-5 items-center justify-center rounded-full text-violet ring-1 ring-gold/60"
+          >
+            <span className="text-xs leading-none">&minus;</span>
+          </button>
+          <div className="flex items-center gap-1">
+            {VOLUME_LEVELS.map((level) => (
+              <span
+                key={level}
+                className={`h-2.5 w-1 rounded-full ${level <= volumeLevel ? 'bg-gold' : 'bg-gold-soft/30'}`}
+              />
+            ))}
+          </div>
+          <button
+            type="button"
+            aria-label="Tambah kelantangan"
+            onClick={() => adjustVolume(1)}
+            className="flex h-5 w-5 items-center justify-center rounded-full text-violet ring-1 ring-gold/60"
+          >
+            <span className="text-xs leading-none">+</span>
+          </button>
+        </div>
+      </div>
+    </div>
   )
 }
