@@ -244,11 +244,27 @@ body {
   animation: twinkle ease-in-out infinite both;
 }
 
+/* slow rotation on the music-player button while a track is playing,
+   evoking a spinning gramophone disc */
+@keyframes discSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-disc-spin {
+  animation: discSpin 8s linear infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-fadeup,
   .animate-crest,
   .animate-rise,
   .animate-celebrate-glow,
+  .animate-disc-spin,
   .reveal {
     animation: none !important;
     opacity: 1 !important;
