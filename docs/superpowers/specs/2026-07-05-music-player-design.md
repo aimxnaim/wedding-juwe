@@ -158,12 +158,71 @@ is removed — no longer used.
   player initializes fine under `display: none`. The workaround was
   reverted; the fix was correcting the video id, nothing else.
 
+## Addendum 2: Slim pill redesign + equalizer bars
+
+The original tall popover card (`w-64`, title stacked above controls)
+felt too big and overlapped surrounding content awkwardly when open (see
+screenshot feedback). Replaced with a compact single-row horizontal pill,
+and the disc-spin "now playing" animation is replaced with pulsing
+equalizer bars.
+
+**Constraint:** the audio plays through a YouTube iframe (cross-origin),
+so there is no way to read real frequency/waveform data from it —
+browsers block that for security. The bars are a decorative, looping CSS
+animation with staggered per-bar delays, not reactive to the actual
+audio. This is the standard approach for "equalizer" icons that can't
+access real audio data.
+
+### Collapsed button (FAB)
+
+Unchanged position/material (`rounded-full border-gold/40 bg-ivory`
+button, bottom-right). Icon swaps based on `isPlaying`:
+- Paused: static `FiMusic` (unchanged from before).
+- Playing: 3 thin vertical bar `<span>`s, each animated with a new
+  `barBounce` CSS keyframe (scaleY oscillating between ~30% and 100%),
+  staggered via `animation-delay` (0s / 0.2s / 0.4s) so they don't move
+  in lockstep. Bars use `bg-gold`. This fully replaces `.animate-disc-spin`
+  (removed from `index.css`, along with the `@keyframes discSpin` rule and
+  its entry in the `prefers-reduced-motion` list) — a new `.animate-eq-bar`
+  class takes its place in that same reduced-motion list, so guests with
+  reduced-motion preferences see static bars instead of a looping bounce.
+
+### Expanded state — horizontal pill (replaces the popover card)
+
+Tapping the button opens a single-row pill extending leftward, anchored
+at the same bottom-right point, roughly 290–300px wide (vs. the previous
+256px-wide, ~180px-tall card) — same `rounded-full border-gold/40
+bg-ivory shadow-[...] ring-1 ring-inset ring-gold/15` material as before,
+just one row instead of a stacked block:
+
+```
+◉ Lagu 1  |◁  ▶  ▷|   🔊──●─
+```
+
+Left to right:
+- Truncated track title only (`truncate max-w-[72px]`, `font-display
+  text-sm text-violet`) — the "1 / 3" counter is dropped to save width;
+  the title alone is enough context.
+- `FiSkipBack` / play-pause (gold circle, smaller than before —
+  `h-9 w-9` instead of `h-11 w-11` — to fit the row height) / `FiSkipForward`.
+- Mute-toggle icon (`FiVolume2`/`FiVolumeX`) + a compact `w-14` volume
+  slider (`accent-gold`), same 0–1 range and behavior as before.
+
+All existing interaction logic is unchanged: tap-to-open/close, prev/next
+wraparound, `ended` auto-advance, real-time volume updates, mute toggle.
+This addendum is a visual-only restyle of `MusicPlayer.tsx`'s JSX/classes
+plus one CSS swap (disc-spin → equalizer bars) — no changes to the
+YouTube IFrame Player wiring from Addendum 1.
+
 ## Testing
 
-- Manual verification: tap play/pause, confirm audio starts/stops and the
-  button begins/stops rotating; drag the volume slider and confirm audible
-  level change; use Next/Prev to cycle through all 3 tracks including
-  wraparound at both ends; let a short test track play to completion and
-  confirm it auto-advances.
+- Manual verification: tap play/pause, confirm the button shows pulsing
+  equalizer bars while playing and the static note icon while paused;
+  open the pill and confirm it renders as a single compact row without
+  overlapping surrounding page content awkwardly; drag the volume slider
+  and confirm the level updates; use Next/Prev to cycle through all 3
+  tracks including wraparound at both ends; let a track play to
+  completion and confirm it auto-advances; check the bars freeze to a
+  static state under `prefers-reduced-motion: reduce`.
 - No unit test framework currently present in the project; scope does not
   warrant introducing one for this widget.
