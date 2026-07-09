@@ -246,13 +246,17 @@ body {
 
 /* dark concentric-groove background for the collapsed music-player
    button, styled to look like a small vinyl record */
+/* an ivory record rather than a violet one: the pill behind it is deep violet,
+   so a pale disc reads as the bright focal point instead of melting into the
+   background. The grooves are two close cream tones — enough to catch the light
+   as it spins, not so much that it looks striped. */
 .bg-vinyl-grooves {
   background: repeating-radial-gradient(
     circle at center,
-    var(--color-violet-deep) 0px,
-    var(--color-violet-deep) 3px,
-    var(--color-violet) 3px,
-    var(--color-violet) 6px
+    var(--color-cream) 0px,
+    var(--color-cream) 3px,
+    var(--color-cream-deep) 3px,
+    var(--color-cream-deep) 6px
   );
 }
 

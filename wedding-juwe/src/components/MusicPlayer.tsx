@@ -214,13 +214,13 @@ export default function MusicPlayer() {
 
       <EntryGate onEnter={startMusic} />
 
-      {/* Bottom-right dock. The wrapper ignores pointer events so it never
+      {/* Top-right dock. The wrapper ignores pointer events so it never
           intercepts taps meant for the page; only the bar itself is live.
-          The safe-area padding keeps the pill clear of iOS Safari's bottom
-          toolbar, which was covering it at the previous bottom-0/pb-3. */}
+          The safe-area padding keeps the pill clear of the iOS notch and of
+          Safari's top chrome. */}
       <div
-        className="pointer-events-none fixed inset-x-0 bottom-0 z-50 mx-auto flex max-w-md justify-end px-4"
-        style={{ paddingBottom: 'calc(1.25rem + env(safe-area-inset-bottom, 0px))' }}
+        className="pointer-events-none fixed inset-x-0 top-0 z-50 mx-auto flex max-w-md justify-end px-4"
+        style={{ paddingTop: 'calc(1rem + env(safe-area-inset-top, 0px))' }}
       >
         <div
           ref={playerBarRef}
@@ -238,26 +238,31 @@ export default function MusicPlayer() {
                 }
               : undefined
           }
-          className={`pointer-events-auto flex items-center overflow-hidden border border-gold text-cream shadow-[0_8px_22px_-8px_rgba(0,0,0,0.55)] transition-[width,border-radius,padding] duration-[450ms] ease-[cubic-bezier(0.5,0,0.3,1)] ${
+          className={`pointer-events-auto flex h-14 items-center overflow-hidden border border-gold/70 text-cream shadow-[0_8px_22px_-8px_rgba(0,0,0,0.45)] backdrop-blur-md transition-[width,border-radius,padding] duration-[450ms] ease-[cubic-bezier(0.5,0,0.3,1)] ${
             isOpen
-              ? 'w-full gap-3 rounded-2xl px-3 py-2.5'
-              : 'w-[92px] cursor-pointer gap-2 rounded-full px-2 py-1.5'
+              ? 'w-full gap-3 rounded-2xl px-3'
+              : 'w-[92px] cursor-pointer gap-2 rounded-full px-2'
           }`}
           style={{
             background:
               // Same deep-violet family as the entry gate, so the site keeps to
               // one accent colour rather than introducing a separate maroon.
-              'linear-gradient(180deg, var(--color-violet), var(--color-violet-deep))',
+              // Held back from opaque so the page reads faintly through it —
+              // backdrop-blur keeps text legible over busy hero imagery.
+              'linear-gradient(180deg, color-mix(in srgb, var(--color-violet) 72%, transparent), color-mix(in srgb, var(--color-violet-deep) 78%, transparent))',
           }}
         >
-          {/* spinning vinyl disc — grows slightly when expanded */}
+          {/* spinning vinyl disc — one size in both states, so opening the card
+              animates width alone rather than resizing the disc mid-flight */}
           <div
             aria-hidden="true"
-            className={`relative flex-none rounded-full bg-vinyl-grooves ring-1 ring-gold/50 ${
+            className={`relative h-9 w-9 flex-none rounded-full bg-vinyl-grooves ring-1 ring-gold/50 ${
               isPlaying ? 'animate-vinyl-spin' : ''
-            } ${isOpen ? 'h-9 w-9' : 'h-[30px] w-[30px]'}`}
+            }`}
           >
-            <span className="absolute inset-[42%] rounded-full bg-gold-soft" />
+            {/* deeper gold than the old gold-soft: the label sat on a violet
+                disc before and now needs to hold its own against cream */}
+            <span className="absolute inset-[42%] rounded-full bg-gold" />
           </div>
 
           {/* collapsed: little equalizer tick as the now-playing signal */}
