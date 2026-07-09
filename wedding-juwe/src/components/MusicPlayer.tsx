@@ -238,9 +238,9 @@ export default function MusicPlayer() {
                 }
               : undefined
           }
-          className={`pointer-events-auto flex h-14 items-center overflow-hidden border border-gold/70 text-cream shadow-[0_8px_22px_-8px_rgba(0,0,0,0.45)] backdrop-blur-md transition-[width,border-radius,padding] duration-[450ms] ease-[cubic-bezier(0.5,0,0.3,1)] ${
+          className={`pointer-events-auto flex h-14 items-center overflow-hidden border border-gold/40 text-cream shadow-[0_6px_18px_-10px_rgba(44,36,69,0.5)] backdrop-blur-md transition-[width,border-radius,padding] duration-[450ms] ease-[cubic-bezier(0.5,0,0.3,1)] ${
             isOpen
-              ? 'w-full gap-3 rounded-2xl px-3'
+              ? 'w-[268px] gap-2.5 rounded-[1.75rem] px-2.5'
               : 'w-[92px] cursor-pointer gap-2 rounded-full px-2'
           }`}
           style={{
@@ -296,7 +296,7 @@ export default function MusicPlayer() {
                 </div>
               </div>
 
-              <div className="flex flex-none items-center gap-3 text-gold-soft">
+              <div className="flex flex-none items-center gap-2 text-gold-soft">
                 <button
                   type="button"
                   aria-label="Lagu sebelum"
