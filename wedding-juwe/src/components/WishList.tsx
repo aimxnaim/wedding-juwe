@@ -183,25 +183,20 @@ export default function WishList({ wishes }: Props) {
   )
 }
 
-const wishDayFormatter = new Intl.DateTimeFormat('ms-MY', {
+const wishDayFormatter = new Intl.DateTimeFormat('en-GB', {
   day: 'numeric',
   month: 'long',
   year: 'numeric',
 })
 
-/** Malay day part for a given hour — pagi (morning), petang (afternoon/evening), malam (night). */
-function dayPart(hour: number): string {
-  if (hour < 12) return 'pagi'
-  if (hour < 19) return 'petang'
-  return 'malam'
-}
-
-/** Formats a wish's timestamp, e.g. "5 Julai 2026 pada 3:45 petang". */
+/** Formats a wish's timestamp, e.g. "5 July 2026, 3:45 PM". */
 function formatWishDate(createdAt: string): string {
   const date = new Date(createdAt)
-  const hour12 = date.getHours() % 12 || 12
+  const hours = date.getHours()
+  const hour12 = hours % 12 || 12
   const minutes = date.getMinutes().toString().padStart(2, '0')
-  return `${wishDayFormatter.format(date)} pada ${hour12}:${minutes} ${dayPart(date.getHours())}`
+  const meridiem = hours < 12 ? 'AM' : 'PM'
+  return `${wishDayFormatter.format(date)}, ${hour12}:${minutes} ${meridiem}`
 }
 
 /**
