@@ -260,7 +260,21 @@ body {
   );
 }
 
-/* continuous rotation for the collapsed vinyl disc while a track plays */
+/* A gloss streak across the record. Concentric grooves are rotationally
+   symmetric, so a spinning disc built from them alone looks perfectly still —
+   this diagonal highlight (and the rim marker in MusicPlayer) is what actually
+   makes the rotation legible. */
+.bg-vinyl-sheen {
+  background: linear-gradient(
+    115deg,
+    transparent 38%,
+    rgba(255, 255, 255, 0.9) 47%,
+    rgba(255, 255, 255, 0.35) 53%,
+    transparent 62%
+  );
+}
+
+/* continuous rotation for the vinyl disc while a track plays */
 @keyframes vinylSpin {
   from {
     transform: rotate(0deg);
@@ -271,7 +285,7 @@ body {
 }
 
 .animate-vinyl-spin {
-  animation: vinylSpin 3s linear infinite;
+  animation: vinylSpin 2.4s linear infinite;
 }
 
 /* small "now playing" equalizer bars in the collapsed footer pill —

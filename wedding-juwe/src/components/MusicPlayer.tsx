@@ -260,6 +260,11 @@ export default function MusicPlayer() {
               isPlaying ? 'animate-vinyl-spin' : ''
             }`}
           >
+            {/* gloss streak — rotates with the disc, so the spin is visible */}
+            <span className="bg-vinyl-sheen absolute inset-0 rounded-full opacity-70" />
+            {/* rim marker: the one asymmetric feature on an otherwise
+                rotationally symmetric disc. Without it the spin is invisible. */}
+            <span className="absolute left-1/2 top-[3px] h-[3px] w-[3px] -translate-x-1/2 rounded-full bg-gold/80" />
             {/* deeper gold than the old gold-soft: the label sat on a violet
                 disc before and now needs to hold its own against cream */}
             <span className="absolute inset-[42%] rounded-full bg-gold" />
