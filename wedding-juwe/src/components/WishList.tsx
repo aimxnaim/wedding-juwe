@@ -274,14 +274,15 @@ function WishModal({ wish, onClose }: { wish: Wish; onClose: () => void }) {
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose()
       }}
-      className="fixed inset-0 z-[55] flex items-center justify-center bg-violet/40 p-6 backdrop-blur-sm"
+      className="animate-modal-backdrop fixed inset-0 z-[55] flex items-center justify-center bg-violet/40 p-6
+        backdrop-blur-sm"
     >
       <div
         role="dialog"
         aria-modal="true"
         aria-label={`Ucapan daripada ${wish.name}`}
-        className="max-h-[80vh] w-full max-w-md overflow-y-auto rounded-2xl border border-gold/30 bg-ivory p-6
-          shadow-[0_20px_50px_-20px_rgba(30,35,82,0.6)]"
+        className="animate-modal-card max-h-[80vh] w-full max-w-md overflow-y-auto rounded-2xl border border-gold/30
+          bg-ivory p-6 shadow-[0_20px_50px_-20px_rgba(30,35,82,0.6)]"
       >
         <div className="flex items-center gap-3">
           <img

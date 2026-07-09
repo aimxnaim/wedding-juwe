@@ -385,6 +385,36 @@ body {
   animation: gateRipple 6s ease-out infinite;
 }
 
+/* the wish modal: the backdrop washes in while the card settles up into place,
+   the card trailing slightly behind so it reads as arriving, not appearing */
+@keyframes modalBackdropIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-modal-backdrop {
+  animation: modalBackdropIn 0.28s ease both;
+}
+
+@keyframes modalCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-modal-card {
+  animation: modalCardIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.04s both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-fadeup,
   .animate-crest,
@@ -392,6 +422,8 @@ body {
   .animate-celebrate-glow,
   .animate-vinyl-spin,
   .animate-eq-bar,
+  .animate-modal-backdrop,
+  .animate-modal-card,
   .reveal {
     animation: none !important;
     opacity: 1 !important;
