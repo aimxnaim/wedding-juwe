@@ -22,6 +22,51 @@ export default function EntryGate({ onEnter }: { onEnter: () => void }) {
     rootRef.current?.focus()
   }, [])
 
+  /**
+   * While the gate is up: pin the page to the top and freeze scrolling, so the
+   * guest can't scroll the site behind the gate and land mid-page when it
+   * opens. `position: fixed` on the body (not just `overflow: hidden`) is what
+   * actually holds on iOS Safari.
+   *
+   * Keyed on `isDone` rather than mount: this component returns `null` when
+   * finished but stays mounted, so an unmount-only cleanup would never run and
+   * the page would stay frozen forever.
+   */
+  useEffect(() => {
+    if (isDone) return
+
+    const { body, documentElement: html } = document
+    const previous = {
+      bodyOverflow: body.style.overflow,
+      bodyPosition: body.style.position,
+      bodyWidth: body.style.width,
+      bodyTop: body.style.top,
+      htmlOverscroll: html.style.overscrollBehavior,
+      scrollRestoration: history.scrollRestoration,
+    }
+
+    // Stop the browser restoring a previous scroll offset on reload.
+    history.scrollRestoration = 'manual'
+    window.scrollTo(0, 0)
+
+    body.style.overflow = 'hidden'
+    body.style.position = 'fixed'
+    body.style.width = '100%'
+    body.style.top = '0'
+    html.style.overscrollBehavior = 'none'
+
+    return () => {
+      body.style.overflow = previous.bodyOverflow
+      body.style.position = previous.bodyPosition
+      body.style.width = previous.bodyWidth
+      body.style.top = previous.bodyTop
+      html.style.overscrollBehavior = previous.htmlOverscroll
+      history.scrollRestoration = previous.scrollRestoration
+      // Releasing `position: fixed` can leave the page scrolled; land at the top.
+      window.scrollTo(0, 0)
+    }
+  }, [isDone])
+
   function open() {
     if (isOpen) return
     onEnter() // start music within the user-gesture call stack
@@ -48,7 +93,7 @@ export default function EntryGate({ onEnter }: { onEnter: () => void }) {
       className={`gate-overlay fixed inset-0 z-[60] cursor-pointer overflow-hidden outline-none ${
         isOpen ? 'is-open' : ''
       }`}
-      style={{ perspective: '1400px' }}
+      style={{ perspective: '1400px', touchAction: 'none' }}
     >
       <GateLeaf side="left" />
       <GateLeaf side="right" />

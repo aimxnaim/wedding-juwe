@@ -62,9 +62,18 @@ function buildEmbedSrc(videoId: string) {
     disablekb: '1',
     playsinline: '1',
     rel: '0',
+    // Trim the player down to just audio playback: no branding, no annotations,
+    // no fullscreen affordance, no related-video overlay.
+    modestbranding: '1',
+    iv_load_policy: '3',
+    fs: '0',
     origin: window.location.origin,
   })
-  return `https://www.youtube.com/embed/${videoId}?${params}`
+  // The privacy-enhanced host: no ad module, so none of the
+  // googleads.g.doubleclick.net/pagead requests fire. (YouTube's own playback
+  // telemetry — log_event / ptracking / qoe — still does; that is internal to
+  // its player and cannot be switched off from the embed.)
+  return `https://www.youtube-nocookie.com/embed/${videoId}?${params}`
 }
 
 export default function MusicPlayer() {

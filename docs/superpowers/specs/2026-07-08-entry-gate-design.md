@@ -127,6 +127,20 @@ Two coverage bugs were found and fixed here:
   rounded-short box can never leak a hairline of the site at the edges. The
   50% clip still lands on the true centre since the overhang is symmetric.
 
+### Scroll lock
+
+While the gate is up the page is pinned to the top and scrolling is frozen,
+so the guest cannot scroll the site behind the gate and land mid-page when
+it opens. `position: fixed` on the `<body>` (not merely `overflow: hidden`)
+is what actually holds on iOS Safari; the overlay also sets
+`touch-action: none`, and `history.scrollRestoration` is forced to `manual`
+so a reload can't restore a previous offset. On release the page is scrolled
+back to `(0, 0)`.
+
+The lock effect is keyed on `isDone`, **not** on mount: the component returns
+`null` when finished but stays mounted, so an unmount-only cleanup would
+never run and the page would stay frozen forever.
+
 ### Idle "living gate"
 
 While shut, the gate is quietly alive (no text, per the bare instruction):
