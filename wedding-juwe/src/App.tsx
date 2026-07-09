@@ -1,4 +1,5 @@
 import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from "@vercel/speed-insights/react"
 import arabicNamesGold from './assets/arabic-names-gold.webp'
 import CountdownSection from './components/CountdownSection'
 import Hero from './components/Hero'
@@ -34,6 +35,7 @@ export default function App() {
         </p>
       </footer>
       <Analytics />
+      <SpeedInsights />
     </main>
   )
 }
