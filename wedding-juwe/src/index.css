@@ -246,17 +246,35 @@ body {
 
 /* dark concentric-groove background for the collapsed music-player
    button, styled to look like a small vinyl record */
+/* an ivory record rather than a violet one: the pill behind it is deep violet,
+   so a pale disc reads as the bright focal point instead of melting into the
+   background. The grooves are two close cream tones — enough to catch the light
+   as it spins, not so much that it looks striped. */
 .bg-vinyl-grooves {
   background: repeating-radial-gradient(
     circle at center,
-    var(--color-violet-deep) 0px,
-    var(--color-violet-deep) 3px,
-    var(--color-violet) 3px,
-    var(--color-violet) 6px
+    var(--color-cream) 0px,
+    var(--color-cream) 3px,
+    var(--color-cream-deep) 3px,
+    var(--color-cream-deep) 6px
   );
 }
 
-/* continuous rotation for the collapsed vinyl disc while a track plays */
+/* A gloss streak across the record. Concentric grooves are rotationally
+   symmetric, so a spinning disc built from them alone looks perfectly still —
+   this diagonal highlight (and the rim marker in MusicPlayer) is what actually
+   makes the rotation legible. */
+.bg-vinyl-sheen {
+  background: linear-gradient(
+    115deg,
+    transparent 38%,
+    rgba(255, 255, 255, 0.9) 47%,
+    rgba(255, 255, 255, 0.35) 53%,
+    transparent 62%
+  );
+}
+
+/* continuous rotation for the vinyl disc while a track plays */
 @keyframes vinylSpin {
   from {
     transform: rotate(0deg);
@@ -267,7 +285,7 @@ body {
 }
 
 .animate-vinyl-spin {
-  animation: vinylSpin 3s linear infinite;
+  animation: vinylSpin 2.4s linear infinite;
 }
 
 /* small "now playing" equalizer bars in the collapsed footer pill —
@@ -385,6 +403,36 @@ body {
   animation: gateRipple 6s ease-out infinite;
 }
 
+/* the wish modal: the backdrop washes in while the card settles up into place,
+   the card trailing slightly behind so it reads as arriving, not appearing */
+@keyframes modalBackdropIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-modal-backdrop {
+  animation: modalBackdropIn 0.28s ease both;
+}
+
+@keyframes modalCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-modal-card {
+  animation: modalCardIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.04s both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-fadeup,
   .animate-crest,
@@ -392,6 +440,8 @@ body {
   .animate-celebrate-glow,
   .animate-vinyl-spin,
   .animate-eq-bar,
+  .animate-modal-backdrop,
+  .animate-modal-card,
   .reveal {
     animation: none !important;
     opacity: 1 !important;

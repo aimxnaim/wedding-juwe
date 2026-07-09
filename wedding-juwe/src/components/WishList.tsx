@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { FiClock, FiRotateCcw } from 'react-icons/fi'
 import type { Wish } from '../api/wishes'
 import { avatarUrl } from '../lib/avatar'
@@ -16,6 +17,7 @@ export default function WishList({ wishes }: Props) {
   const trackRef = useRef<HTMLUListElement>(null)
   const cardRefs = useRef<Array<HTMLLIElement | null>>([])
   const [active, setActive] = useState(0)
+  const [openWish, setOpenWish] = useState<Wish | null>(null)
   const pausedRef = useRef(false)
   const resumeTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined)
   const inViewRef = useRef(false)
@@ -69,6 +71,14 @@ export default function WishList({ wishes }: Props) {
     return () => clearInterval(id)
   }, [active, wishes.length])
 
+  // Hold the carousel still while a guest reads a wish in the modal, then
+  // fall back to the normal idle countdown once they close it.
+  useEffect(() => {
+    if (!openWish) return
+    pause()
+    return () => scheduleResume()
+  }, [openWish])
+
   // Scrolls only the carousel's own horizontal track — never scrollIntoView,
   // which walks up every scrollable ancestor (including the page itself) and
   // would yank the whole viewport down to the carousel on auto-advance.
@@ -94,6 +104,9 @@ export default function WishList({ wishes }: Props) {
       pausedRef.current = false
     }, AUTO_ADVANCE_MS)
   }
+
+  // Stable identity so WishModal's effect doesn't re-run on every parent render.
+  const closeModal = useCallback(() => setOpenWish(null), [])
 
   if (wishes.length === 0) {
     return (
@@ -144,7 +157,7 @@ export default function WishList({ wishes }: Props) {
                 </p>
               </div>
             </div>
-            <WishMessage message={wish.message} />
+            <WishMessage message={wish.message} onReadMore={() => setOpenWish(wish)} />
           </li>
         ))}
       </ul>
@@ -179,40 +192,37 @@ export default function WishList({ wishes }: Props) {
           ))}
         </div>
       )}
+
+      {openWish && <WishModal wish={openWish} onClose={closeModal} />}
     </div>
   )
 }
 
-const wishDayFormatter = new Intl.DateTimeFormat('ms-MY', {
+const wishDayFormatter = new Intl.DateTimeFormat('en-GB', {
   day: 'numeric',
   month: 'long',
   year: 'numeric',
 })
 
-/** Malay day part for a given hour — pagi (morning), petang (afternoon/evening), malam (night). */
-function dayPart(hour: number): string {
-  if (hour < 12) return 'pagi'
-  if (hour < 19) return 'petang'
-  return 'malam'
-}
-
-/** Formats a wish's timestamp, e.g. "5 Julai 2026 pada 3:45 petang". */
+/** Formats a wish's timestamp, e.g. "5 July 2026, 3:45 PM". */
 function formatWishDate(createdAt: string): string {
   const date = new Date(createdAt)
-  const hour12 = date.getHours() % 12 || 12
+  const hours = date.getHours()
+  const hour12 = hours % 12 || 12
   const minutes = date.getMinutes().toString().padStart(2, '0')
-  return `${wishDayFormatter.format(date)} pada ${hour12}:${minutes} ${dayPart(date.getHours())}`
+  const meridiem = hours < 12 ? 'AM' : 'PM'
+  return `${wishDayFormatter.format(date)}, ${hour12}:${minutes} ${meridiem}`
 }
 
 /**
- * Clamps a wish message to 4 lines and reveals a "Baca Lagi" toggle only
- * when the text actually overflows the clamp — so short messages never show
- * a pointless button, and each card's expand state stays local to itself.
+ * Clamps a wish message to 4 lines and reveals a "Baca Lagi" button only when
+ * the text actually overflows the clamp — so short messages never show a
+ * pointless button. Reading the rest happens in WishModal, not in the card,
+ * which keeps every card the same height inside the carousel.
  */
-function WishMessage({ message }: { message: string }) {
+function WishMessage({ message, onReadMore }: { message: string; onReadMore: () => void }) {
   const textRef = useRef<HTMLParagraphElement>(null)
   const [isOverflowing, setIsOverflowing] = useState(false)
-  const [expanded, setExpanded] = useState(false)
 
   useEffect(() => {
     const el = textRef.current
@@ -222,21 +232,75 @@ function WishMessage({ message }: { message: string }) {
 
   return (
     <>
-      <p
-        ref={textRef}
-        className={`mt-3 leading-relaxed text-violet/85 ${expanded ? '' : 'line-clamp-4'}`}
-      >
+      <p ref={textRef} className="mt-3 leading-relaxed text-violet/85 line-clamp-4">
         {message}
       </p>
-      {(isOverflowing || expanded) && (
+      {isOverflowing && (
         <button
           type="button"
-          onClick={() => setExpanded((prev) => !prev)}
+          onClick={onReadMore}
           className="mt-1.5 text-sm font-medium text-gold underline-offset-2 hover:underline"
         >
-          {expanded ? 'Lebih Sikit' : 'Baca Lagi'}
+          Baca Lagi
         </button>
       )}
     </>
+  )
+}
+
+/**
+ * Shows one wish's full, unclamped message over a dimmed backdrop. Portalled to
+ * document.body so the carousel's `overflow-x-auto` track can't clip it. Closes
+ * on backdrop tap; Escape is a silent fallback so keyboard users aren't trapped.
+ */
+function WishModal({ wish, onClose }: { wish: Wish; onClose: () => void }) {
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', onKeyDown)
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', onKeyDown)
+      document.body.style.overflow = previousOverflow
+    }
+  }, [onClose])
+
+  return createPortal(
+    <div
+      // Only a tap on the backdrop itself closes — a tap that started on the
+      // card (e.g. scrolling a long message) bubbles up here and must not.
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose()
+      }}
+      className="animate-modal-backdrop fixed inset-0 z-[55] flex items-center justify-center bg-violet/40 p-6
+        backdrop-blur-sm"
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Ucapan daripada ${wish.name}`}
+        className="animate-modal-card max-h-[80vh] w-full max-w-md overflow-y-auto rounded-2xl border border-gold/30
+          bg-ivory p-6 shadow-[0_20px_50px_-20px_rgba(30,35,82,0.6)]"
+      >
+        <div className="flex items-center gap-3">
+          <img
+            src={avatarUrl(wish.avatarSeed || wish.name)}
+            alt=""
+            className="h-11 w-11 shrink-0 rounded-full border border-gold/50 bg-cream-deep"
+          />
+          <div>
+            <p className="font-display text-xl text-violet">{wish.name}</p>
+            <p className="mt-0.5 flex items-center gap-1 text-[0.7rem] text-violet/70">
+              <FiClock className="h-3 w-3 text-gold" aria-hidden="true" />
+              {formatWishDate(wish.createdAt)}
+            </p>
+          </div>
+        </div>
+        <p className="mt-4 leading-relaxed text-violet/85">{wish.message}</p>
+      </div>
+    </div>,
+    document.body,
   )
 }
