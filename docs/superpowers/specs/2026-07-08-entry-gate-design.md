@@ -88,8 +88,25 @@ on the leaf) fills whatever is between.
 
 Each band is a window onto the same SVG: the image is drawn at the stage's
 full width and slid up by an offset so the wanted slice lands in view.
-Percentage margins resolve against the container's *width*, which is what
-we need since the image is width-scaled — so it stays correct at any width.
+
+**Every vertical dimension is a percentage of the stage's *width*** —
+expressed as percentage *padding* (box heights) or negative percentage
+*margin* (image offsets). Both always resolve against the containing
+block's inline size, in every engine. Nothing depends on a parent's
+resolved height.
+
+> This is deliberate, and was a Safari-only production bug. The first
+> version sized the medallion group with `aspect-ratio` and gave its
+> children percentage `height`s. Chrome resolves those; **Safari treats an
+> `aspect-ratio`-derived height as indefinite**, so each divider's height
+> collapsed to `auto` and spilled its whole image — painting extra mandalas
+> and duplicate corner ornaments. Do not reintroduce `aspect-ratio` +
+> percentage heights here.
+>
+> Note also that inside the mandala's circular mask, percentage margins
+> resolve against the *mask's* width, not the artwork's — those offsets are
+> scaled by `MANDALA.size`, not `ART_W`.
+
 Geometry, measured off a 400x563 render (not eyeballed):
 
 | slice | rows |

@@ -348,16 +348,18 @@ body {
   animation: gateMandalaSpin 90s linear infinite;
 }
 
-/* a slow breath of gold light behind the medallion */
+/* A slow breath of gold light over the medallion. Both this and the ripple
+   below are laid out with `inset: 0` on the mandala's square wrapper, so the
+   keyframes only ever touch `scale()` — no centring translate to preserve. */
 @keyframes gateGlowPulse {
   0%,
   100% {
     opacity: 0.22;
-    transform: translate(-50%, -50%) scale(0.92);
+    transform: scale(1.42);
   }
   50% {
     opacity: 0.5;
-    transform: translate(-50%, -50%) scale(1.06);
+    transform: scale(1.68);
   }
 }
 .gate-glow {
@@ -365,18 +367,17 @@ body {
 }
 
 /* soft gold rings rippling outward from the medallion, like a drop in water.
-   Three staggered copies keep the ripple continuous. The keyframe re-declares
-   the centring translate, since an animation replaces `transform` wholesale. */
+   Three staggered copies keep the ripple continuous. */
 @keyframes gateRipple {
   0% {
-    transform: translate(-50%, -50%) scale(0.6);
+    transform: scale(0.6);
     opacity: 0;
   }
   18% {
     opacity: 0.55;
   }
   100% {
-    transform: translate(-50%, -50%) scale(1.8);
+    transform: scale(1.8);
     opacity: 0;
   }
 }
