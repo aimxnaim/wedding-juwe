@@ -214,12 +214,12 @@ export default function MusicPlayer() {
 
       <EntryGate onEnter={startMusic} />
 
-      {/* Top-right dock. The wrapper ignores pointer events so it never
+      {/* Top-left dock. The wrapper ignores pointer events so it never
           intercepts taps meant for the page; only the bar itself is live.
           The safe-area padding keeps the pill clear of the iOS notch and of
           Safari's top chrome. */}
       <div
-        className="pointer-events-none fixed inset-x-0 top-0 z-50 mx-auto flex max-w-md justify-end px-4"
+        className="pointer-events-none fixed inset-x-0 top-0 z-50 mx-auto flex max-w-md justify-start px-4"
         style={{ paddingTop: 'calc(1rem + env(safe-area-inset-top, 0px))' }}
       >
         <div
@@ -238,10 +238,12 @@ export default function MusicPlayer() {
                 }
               : undefined
           }
-          className={`pointer-events-auto flex h-14 items-center overflow-hidden border border-gold/40 text-cream shadow-[0_6px_18px_-10px_rgba(44,36,69,0.5)] backdrop-blur-md transition-[width,border-radius,padding] duration-[450ms] ease-[cubic-bezier(0.5,0,0.3,1)] ${
+          // px-2.5 in both states: unequal padding slid the disc 2px sideways
+          // as the card opened. Equal padding pins it, so only width animates.
+          className={`pointer-events-auto flex h-14 items-center overflow-hidden border border-gold/40 px-2.5 text-cream shadow-[0_6px_18px_-10px_rgba(44,36,69,0.5)] backdrop-blur-md transition-[width,border-radius] duration-[450ms] ease-[cubic-bezier(0.5,0,0.3,1)] ${
             isOpen
-              ? 'w-[268px] gap-2.5 rounded-[1.75rem] px-2.5'
-              : 'w-[92px] cursor-pointer gap-2 rounded-full px-2'
+              ? 'w-[268px] gap-2.5 rounded-[1.75rem]'
+              : 'w-[92px] cursor-pointer gap-2 rounded-full'
           }`}
           style={{
             background:
