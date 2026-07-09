@@ -270,12 +270,127 @@ body {
   animation: vinylSpin 3s linear infinite;
 }
 
+/* small "now playing" equalizer bars in the collapsed footer pill —
+   decorative only (cross-origin YouTube audio exposes no frequency data) */
+@keyframes eqBar {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.animate-eq-bar {
+  transform-origin: bottom center;
+  animation: eqBar 1s ease-in-out infinite;
+}
+
+/* ---- Entry gate (welcome-gate artwork, splits into two doors) ---- */
+/* The artwork is one flat panel, so each half is a full copy clipped to its
+   side. They swing apart on their outer hinges, revealing the site; then the
+   whole gate zooms forward and fades — as if walking through the doorway. */
+.gate-overlay {
+  transition:
+    opacity 0.7s ease 1s,
+    transform 0.95s cubic-bezier(0.4, 0, 0.2, 1) 0.95s;
+}
+.gate-overlay.is-open {
+  opacity: 0;
+  transform: scale(1.9);
+  pointer-events: none;
+}
+
+.gate-leaf {
+  transition: transform 1.15s cubic-bezier(0.66, 0, 0.34, 1);
+  backface-visibility: hidden;
+  will-change: transform;
+}
+/* Halves overlap by 1px at the seam; without it sub-pixel rounding leaves a
+   hairline gap that shows the (white) site through the closed gate. */
+.gate-leaf-left {
+  clip-path: inset(0 calc(50% - 0.5px) 0 0);
+  transform-origin: left center;
+}
+.gate-leaf-right {
+  clip-path: inset(0 0 0 calc(50% - 0.5px));
+  transform-origin: right center;
+}
+.gate-overlay.is-open .gate-leaf-left {
+  transform: rotateY(-110deg);
+}
+.gate-overlay.is-open .gate-leaf-right {
+  transform: rotateY(110deg);
+}
+
+/* Seam shading only reads once the doors part — hidden while shut, or it
+   paints a dark stripe down the middle of the closed artwork. */
+.gate-seam {
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.gate-overlay.is-open .gate-seam {
+  opacity: 1;
+}
+
+/* ---- Idle "living gate": the closed gate quietly invites a tap ---- */
+
+/* The mandala turns inside a circular mask. Everything in that circle except
+   the mandala is the artwork's own maroon, so only the medallion reads as
+   moving — the dividers above and below it sit outside the circle and stay put. */
+@keyframes gateMandalaSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.gate-mandala {
+  animation: gateMandalaSpin 90s linear infinite;
+}
+
+/* a slow breath of gold light behind the medallion */
+@keyframes gateGlowPulse {
+  0%,
+  100% {
+    opacity: 0.22;
+    transform: translate(-50%, -50%) scale(0.92);
+  }
+  50% {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(1.06);
+  }
+}
+.gate-glow {
+  animation: gateGlowPulse 5.5s ease-in-out infinite;
+}
+
+/* soft gold rings rippling outward from the medallion, like a drop in water.
+   Three staggered copies keep the ripple continuous. The keyframe re-declares
+   the centring translate, since an animation replaces `transform` wholesale. */
+@keyframes gateRipple {
+  0% {
+    transform: translate(-50%, -50%) scale(0.6);
+    opacity: 0;
+  }
+  18% {
+    opacity: 0.55;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.8);
+    opacity: 0;
+  }
+}
+.gate-ripple {
+  animation: gateRipple 6s ease-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-fadeup,
   .animate-crest,
   .animate-rise,
   .animate-celebrate-glow,
   .animate-vinyl-spin,
+  .animate-eq-bar,
   .reveal {
     animation: none !important;
     opacity: 1 !important;
@@ -285,6 +400,24 @@ body {
   .petal,
   .sparkle,
   .firework-spark {
+    display: none !important;
+  }
+  /* Skip the door swing + zoom — the gate just cross-fades away. */
+  .gate-leaf {
+    transition: none !important;
+    transform: none !important;
+  }
+  .gate-overlay {
+    transition: opacity 0.4s ease !important;
+  }
+  .gate-overlay.is-open {
+    transform: none !important;
+  }
+  .gate-mandala,
+  .gate-glow {
+    animation: none !important;
+  }
+  .gate-ripple {
     display: none !important;
   }
 }

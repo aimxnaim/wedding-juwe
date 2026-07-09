@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { FiPause, FiPlay, FiSkipBack, FiSkipForward, FiX } from 'react-icons/fi'
+import EntryGate from './EntryGate'
 
 // Replace with real YouTube video IDs (the 11-character id in a share link,
 // e.g. https://youtu.be/XXXXXXXXXXX or ...watch?v=XXXXXXXXXXX).
@@ -10,7 +11,6 @@ const TRACKS = [
 ]
 
 const DEFAULT_LEVEL = 3
-const VOLUME_LEVELS = [1, 2, 3, 4, 5]
 
 /** Minimal shape of the pieces of the YouTube IFrame Player API this
  * component uses — kept local so no @types/youtube dependency is needed. */
@@ -20,6 +20,8 @@ type YouTubePlayer = {
   cueVideoById(videoId: string): void
   loadVideoById(videoId: string): void
   setVolume(volume: number): void
+  getCurrentTime(): number
+  getDuration(): number
 }
 
 type YouTubePlayerEvent = { data: number; target: YouTubePlayer }
@@ -45,15 +47,18 @@ declare global {
 }
 
 export default function MusicPlayer() {
-  const containerRef = useRef<HTMLDivElement>(null)
+  const playerBarRef = useRef<HTMLDivElement>(null)
   const hostRef = useRef<HTMLDivElement>(null)
   const playerRef = useRef<YouTubePlayer | null>(null)
   const trackIndexRef = useRef(0)
+  // Set when the guest opens the gate before the player has finished
+  // loading; onReady checks it so music still starts on a slow connection.
+  const intentToPlayRef = useRef(false)
 
   const [isOpen, setIsOpen] = useState(false)
   const [trackIndex, setTrackIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
-  const [volumeLevel, setVolumeLevel] = useState(DEFAULT_LEVEL)
+  const [progress, setProgress] = useState(0)
 
   trackIndexRef.current = trackIndex
 
@@ -70,6 +75,8 @@ export default function MusicPlayer() {
         events: {
           onReady: (event) => {
             event.target.setVolume(DEFAULT_LEVEL * 20)
+            // Guest already tapped the gate while we were still loading.
+            if (intentToPlayRef.current) event.target.playVideo()
           },
           onStateChange: (event) => {
             const { PLAYING, PAUSED, ENDED } = window.YT!.PlayerState
@@ -80,6 +87,7 @@ export default function MusicPlayer() {
             } else if (event.data === ENDED) {
               const next = (trackIndexRef.current + 1) % TRACKS.length
               setTrackIndex(next)
+              setProgress(0)
               event.target.loadVideoById(TRACKS[next].videoId)
             }
           },
@@ -104,17 +112,39 @@ export default function MusicPlayer() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Closes the expanded circle when the guest taps anywhere outside it.
+  // Advance the progress bar while the card is open and a track is playing.
+  useEffect(() => {
+    if (!isOpen || !isPlaying) return
+    const id = window.setInterval(() => {
+      const player = playerRef.current
+      if (!player?.getDuration) return
+      const duration = player.getDuration()
+      setProgress(duration ? player.getCurrentTime() / duration : 0)
+    }, 500)
+    return () => window.clearInterval(id)
+  }, [isOpen, isPlaying, trackIndex])
+
+  // Collapse the expanded card back to the pill when tapping outside it.
   useEffect(() => {
     if (!isOpen) return
     function handleOutsideClick(event: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      if (playerBarRef.current && !playerBarRef.current.contains(event.target as Node)) {
         setIsOpen(false)
       }
     }
     document.addEventListener('mousedown', handleOutsideClick)
     return () => document.removeEventListener('mousedown', handleOutsideClick)
   }, [isOpen])
+
+  // Called from the entry gate's tap, inside the user-gesture call stack.
+  function startMusic() {
+    const player = playerRef.current
+    if (player) {
+      player.playVideo()
+    } else {
+      intentToPlayRef.current = true
+    }
+  }
 
   function togglePlay() {
     const player = playerRef.current
@@ -129,6 +159,7 @@ export default function MusicPlayer() {
   function goToTrack(nextIndex: number) {
     const wrapped = (nextIndex + TRACKS.length) % TRACKS.length
     setTrackIndex(wrapped)
+    setProgress(0)
     const player = playerRef.current
     if (!player) return
     if (isPlaying) {
@@ -138,124 +169,120 @@ export default function MusicPlayer() {
     }
   }
 
-  function adjustVolume(delta: number) {
-    setVolumeLevel((current) => {
-      const next = Math.max(0, Math.min(5, current + delta))
-      playerRef.current?.setVolume(next * 20)
-      return next
-    })
-  }
-
   return (
-    <div
-      ref={containerRef}
-      role={isOpen ? undefined : 'button'}
-      tabIndex={isOpen ? undefined : 0}
-      aria-label={isOpen ? undefined : 'Buka pemain muzik'}
-      onClick={!isOpen ? () => setIsOpen(true) : undefined}
-      onKeyDown={
-        !isOpen
-          ? (event) => {
-              if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault()
-                setIsOpen(true)
-              }
-            }
-          : undefined
-      }
-      className={`fixed right-5 bottom-5 z-50 rounded-full shadow-[0_18px_40px_-18px_rgba(30,35,82,0.35)]
-        transition-[width,height] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]
-        ${
-          isOpen
-            ? 'h-[10.5rem] w-[10.5rem] cursor-default border border-gold/40 bg-ivory ring-1 ring-inset ring-gold/15'
-            : 'h-14 w-14 cursor-pointer bg-vinyl-grooves'
-        }
-        ${isPlaying && !isOpen ? 'animate-vinyl-spin' : ''}`}
-    >
+    <>
       <div ref={hostRef} className="hidden" aria-hidden="true" />
 
-      <div
-        aria-hidden="true"
-        className={`absolute top-1/2 left-1/2 flex h-[30px] w-[30px] -translate-x-1/2 -translate-y-1/2
-          items-center justify-center rounded-full bg-gold-soft ring-2 ring-gold transition-opacity
-          duration-200 ${isOpen ? 'pointer-events-none opacity-0' : 'opacity-100'}`}
-      >
-        <span className="h-1.5 w-1.5 rounded-full bg-violet-deep" />
-      </div>
+      <EntryGate onEnter={startMusic} />
 
-      <div
-        inert={!isOpen}
-        className={`absolute inset-0 delay-100 transition-opacity duration-300
-          ${isOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'}`}
-      >
-        <button
-          type="button"
-          aria-label="Tutup pemain muzik"
-          onClick={() => setIsOpen(false)}
-          className="absolute top-3 right-3 text-plum transition hover:text-violet"
+      {/* Bottom-center dock. The wrapper ignores pointer events so it never
+          intercepts taps meant for the page; only the bar itself is live. */}
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 mx-auto flex max-w-md justify-center px-4 pb-3">
+        <div
+          ref={playerBarRef}
+          role={isOpen ? undefined : 'button'}
+          tabIndex={isOpen ? undefined : 0}
+          aria-label={isOpen ? undefined : 'Buka pemain muzik'}
+          onClick={!isOpen ? () => setIsOpen(true) : undefined}
+          onKeyDown={
+            !isOpen
+              ? (event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault()
+                    setIsOpen(true)
+                  }
+                }
+              : undefined
+          }
+          className={`pointer-events-auto flex items-center overflow-hidden border border-gold text-cream shadow-[0_8px_22px_-8px_rgba(0,0,0,0.55)] transition-[width,border-radius,padding] duration-[450ms] ease-[cubic-bezier(0.5,0,0.3,1)] ${
+            isOpen
+              ? 'w-full gap-3 rounded-2xl px-3 py-2.5'
+              : 'w-[92px] cursor-pointer gap-2 rounded-full px-2 py-1.5'
+          }`}
+          style={{
+            background:
+              'linear-gradient(180deg, var(--color-maroon), var(--color-maroon-deep))',
+          }}
         >
-          <FiX size={16} />
-        </button>
-
-        <p className="absolute top-6 left-1/2 max-w-[110px] -translate-x-1/2 truncate text-center font-display text-xs text-violet">
-          {TRACKS[trackIndex].title}
-        </p>
-
-        <button
-          type="button"
-          aria-label="Lagu sebelum"
-          onClick={() => goToTrack(trackIndex - 1)}
-          className="absolute top-1/2 left-4 -translate-y-1/2 text-violet/70 transition hover:text-violet"
-        >
-          <FiSkipBack size={18} />
-        </button>
-
-        <button
-          type="button"
-          aria-label={isPlaying ? 'Jeda muzik' : 'Main muzik'}
-          onClick={togglePlay}
-          className="absolute top-1/2 left-1/2 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2
-            items-center justify-center rounded-full bg-gold text-ivory shadow-md transition hover:bg-gold/90"
-        >
-          {isPlaying ? <FiPause size={22} /> : <FiPlay size={22} className="ml-0.5" />}
-        </button>
-
-        <button
-          type="button"
-          aria-label="Lagu seterusnya"
-          onClick={() => goToTrack(trackIndex + 1)}
-          className="absolute top-1/2 right-4 -translate-y-1/2 text-violet/70 transition hover:text-violet"
-        >
-          <FiSkipForward size={18} />
-        </button>
-
-        <div className="absolute bottom-5 left-1/2 flex -translate-x-1/2 items-center gap-2">
-          <button
-            type="button"
-            aria-label="Kurangkan kelantangan"
-            onClick={() => adjustVolume(-1)}
-            className="flex h-5 w-5 items-center justify-center rounded-full text-violet ring-1 ring-gold/60"
+          {/* spinning vinyl disc — grows slightly when expanded */}
+          <div
+            aria-hidden="true"
+            className={`relative flex-none rounded-full bg-vinyl-grooves ring-1 ring-gold/50 ${
+              isPlaying ? 'animate-vinyl-spin' : ''
+            } ${isOpen ? 'h-9 w-9' : 'h-[30px] w-[30px]'}`}
           >
-            <span className="text-xs leading-none">&minus;</span>
-          </button>
-          <div className="flex items-center gap-1">
-            {VOLUME_LEVELS.map((level) => (
-              <span
-                key={level}
-                className={`h-2.5 w-1 rounded-full ${level <= volumeLevel ? 'bg-gold' : 'bg-gold-soft/30'}`}
-              />
-            ))}
+            <span className="absolute inset-[42%] rounded-full bg-gold-soft" />
           </div>
-          <button
-            type="button"
-            aria-label="Tambah kelantangan"
-            onClick={() => adjustVolume(1)}
-            className="flex h-5 w-5 items-center justify-center rounded-full text-violet ring-1 ring-gold/60"
-          >
-            <span className="text-xs leading-none">+</span>
-          </button>
+
+          {/* collapsed: little equalizer tick as the now-playing signal */}
+          {!isOpen && (
+            <div aria-hidden="true" className="flex h-3.5 items-end gap-0.5">
+              <span className="w-0.5 rounded-full bg-gold-soft animate-eq-bar" style={{ height: '6px' }} />
+              <span
+                className="w-0.5 rounded-full bg-gold-soft animate-eq-bar"
+                style={{ height: '14px', animationDelay: '0.2s' }}
+              />
+              <span
+                className="w-0.5 rounded-full bg-gold-soft animate-eq-bar"
+                style={{ height: '9px', animationDelay: '0.4s' }}
+              />
+            </div>
+          )}
+
+          {/* expanded: title + progress + controls */}
+          {isOpen && (
+            <>
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-display text-sm text-cream">
+                  {TRACKS[trackIndex].title}
+                </p>
+                <p className="text-[0.55rem] tracking-[0.2em] text-gold-soft/70">MUZIK MAJLIS</p>
+                <div className="mt-1.5 h-0.5 rounded-full bg-cream/25">
+                  <div
+                    className="h-full rounded-full bg-gold-soft transition-[width] duration-500 ease-linear"
+                    style={{ width: `${Math.min(100, progress * 100)}%` }}
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-none items-center gap-3 text-gold-soft">
+                <button
+                  type="button"
+                  aria-label="Lagu sebelum"
+                  onClick={() => goToTrack(trackIndex - 1)}
+                  className="transition hover:text-cream"
+                >
+                  <FiSkipBack size={16} />
+                </button>
+                <button
+                  type="button"
+                  aria-label={isPlaying ? 'Jeda muzik' : 'Main muzik'}
+                  onClick={togglePlay}
+                  className="transition hover:text-cream"
+                >
+                  {isPlaying ? <FiPause size={20} /> : <FiPlay size={20} />}
+                </button>
+                <button
+                  type="button"
+                  aria-label="Lagu seterusnya"
+                  onClick={() => goToTrack(trackIndex + 1)}
+                  className="transition hover:text-cream"
+                >
+                  <FiSkipForward size={16} />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Tutup pemain muzik"
+                  onClick={() => setIsOpen(false)}
+                  className="text-gold-soft/60 transition hover:text-cream"
+                >
+                  <FiX size={15} />
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
-    </div>
+    </>
   )
 }

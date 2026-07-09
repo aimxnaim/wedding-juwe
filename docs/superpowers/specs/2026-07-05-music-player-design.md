@@ -314,6 +314,113 @@ All other logic from Addendum 1 (YouTube IFrame Player wiring,
 `togglePlay`, `goToTrack`'s `loadVideoById`/`cueVideoById` split, ENDED
 auto-advance) is unchanged.
 
+## Addendum 4: Footer bar redesign (supersedes Addendum 3)
+
+User feedback after living with the vinyl-disc-in-the-corner: the
+floating corner circle still wasn't the look they wanted. New direction,
+decided via the visual brainstorming companion (mockups + live
+interactive demos; scratch in `.superpowers/brainstorm/`, gitignored):
+replace the corner circle with a **music footer bar docked at the bottom
+of the page**. This also pairs with the new entry gate
+(`2026-07-08-entry-gate-design.md`) which now handles autoplay-on-entry.
+
+This fully replaces Addendum 3's corner disc/clock-face. The player is no
+longer a corner FAB — it's a bottom-docked bar with a small-pill collapsed
+state and a compact expanded card.
+
+### Position — bottom-center dock
+
+- Container becomes `fixed inset-x-0 bottom-0 z-50`, a flex row that
+  centers its child, with bottom + side padding — so the player sits
+  **centered along the bottom edge** rather than in a corner. It stays
+  put while the page scrolls (unchanged `position: fixed` behavior).
+- **Two footers, no conflict:** the existing `App.tsx` `<footer>` (Arabic
+  names / date / credit) is part of normal document flow and scrolls away
+  like the rest of the page. This music bar is `fixed` and floats above
+  the very bottom of the viewport. They never collide — the music bar
+  simply hovers over whatever content is at the bottom, including the page
+  footer when scrolled there. (Confirmed as the intended behavior with the
+  user.)
+
+### Collapsed state — small pill (default)
+
+The default resting state, kept deliberately small so it stays out of the
+way:
+
+- A compact rounded pill, `bg-maroon`-gradient (maroon → maroon-deep) with
+  a `border-gold` hairline and a soft drop shadow — matching the gate's
+  material so the two read as one family.
+- Contents: the small spinning vinyl **disc** (reused groove styling from
+  Addendum 3, ~28–30px) + a tiny **3-bar equalizer** tick
+  (`--color-gold-soft` bars, staggered `eqBar` keyframe) as the "now
+  playing" signal. Width is just enough for those two (~90px).
+- While playing, the disc rotates (respects `prefers-reduced-motion`); the
+  equalizer bars animate. Tapping the pill expands it.
+
+### Expanded state — compact floating card (tap to open)
+
+Tapping the pill grows it **in place** into the full card (CSS `width` /
+`border-radius` / `padding` transition, ~450ms `cubic-bezier(.5,0,.3,1)`).
+This is the design the user approved with the disc + progress bar; kept
+compact ("nice, not big"):
+
+```
+◉  Nasyid Cinta        ⏮  ⏸  ⏭   ✕
+   MUZIK MAJLIS   ────────
+```
+
+Left to right, single row:
+- The spinning **disc** (~36px), grown slightly from the pill's disc (same
+  element, animates size).
+- **Track title** (`font-display text-cream`, `truncate`) with a small
+  `MUZIK MAJLIS` label beneath, and a thin **progress bar** under that
+  (`--color-gold-soft` fill on a translucent track) reflecting playback
+  position.
+- **Controls** in `--color-gold-soft`: `FiSkipBack` / play-pause
+  (`FiPlay`/`FiPause`) / `FiSkipForward`.
+- A small **`FiX`** to collapse back to the pill.
+
+Card stays a single short row (never tall) and auto-fits the card width to
+the mobile card; on the phone-width layout it spans the dock with side
+gaps (the approved "floating card" look, type C).
+
+### Progress bar (new vs. Addendum 3)
+
+Addendum 3 had no progress indicator. The bar here reflects real playback
+position: poll `player.getCurrentTime()` / `player.getDuration()` on an
+interval (e.g. every ~500ms while expanded and playing) and set the fill
+width `= currentTime / duration`. Add `getCurrentTime`/`getDuration` to
+the local `YouTubePlayer` type. Non-interactive for v1 (display only — no
+seek-on-click); seeking can be a later addition if wanted.
+
+### Controls, volume, closing
+
+- Play/pause, prev/next wraparound, and `ENDED` auto-advance: **unchanged**
+  from Addendum 1's YouTube wiring.
+- **Volume:** the clock-face tap −/+ 6-level control from Addendum 3 does
+  not fit the single-row bar. For v1 the bar omits an on-surface volume
+  control (guests use their device volume), keeping the row compact. The
+  `DEFAULT_LEVEL = 3` (60%) initial volume set in `onReady` stays. (If a
+  volume affordance is later wanted, add a small popover above the bar —
+  out of scope now, YAGNI.)
+- **Closing:** the `✕` collapses the card back to the pill. The
+  document-level outside-click listener from Addendum 3 also collapses it
+  (tap anywhere off the card). No full "hide/dismiss" — the pill always
+  remains as the persistent now-playing affordance.
+
+### What's removed from Addendum 3
+
+- The corner position (`bottom-5 right-5`) → bottom-center dock.
+- The 168px clock-face circle and its radial control layout → single-row
+  compact card.
+- The on-widget tap −/+ volume stepper (see Volume note above).
+- The center-label-fade-on-expand detail (the disc now persists into the
+  expanded card rather than being replaced by an ivory face).
+
+Kept: the vinyl groove disc styling, the YouTube IFrame wiring
+(Addendum 1), prev/next wraparound, ENDED auto-advance, reduced-motion
+handling for the spin.
+
 ## Testing
 
 - Manual verification: tap the collapsed disc, confirm it grows smoothly
@@ -328,5 +435,14 @@ auto-advance) is unchanged.
   rotation freezes under `prefers-reduced-motion: reduce`; use Next/Prev
   to confirm wraparound at both ends; let a track play to completion and
   confirm ENDED auto-advance still works.
+- **Addendum 4 (footer bar):** confirm the player docks bottom-center and
+  stays there while scrolling; the default is the small pill (disc +
+  equalizer) and it's unobtrusive; tapping it grows smoothly into the
+  compact one-row card (title + progress + ⏮ ⏸ ⏭ + ✕), never tall; the
+  progress bar advances during playback; ⏸/▶ and prev/next wraparound and
+  ENDED auto-advance all still work; ✕ and outside-click both collapse
+  back to the pill; the pill's disc spins while playing and freezes under
+  `prefers-reduced-motion: reduce`; the page `<footer>` and the music bar
+  don't visually collide when scrolled to the bottom.
 - No unit test framework currently present in the project; scope does not
   warrant introducing one for this widget.
