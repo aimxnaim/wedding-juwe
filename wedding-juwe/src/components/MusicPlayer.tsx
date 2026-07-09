@@ -17,7 +17,6 @@ const DEFAULT_LEVEL = 3
 type YouTubePlayer = {
   playVideo(): void
   pauseVideo(): void
-  cueVideoById(videoId: string): void
   loadVideoById(videoId: string): void
   setVolume(volume: number): void
   getCurrentTime(): number
@@ -32,7 +31,9 @@ declare global {
       Player: new (
         element: HTMLElement,
         options: {
-          videoId: string
+          // Omitted when attaching to an existing <iframe>: the video and
+          // player vars come from that iframe's own src.
+          videoId?: string
           playerVars?: Record<string, number>
           events?: {
             onReady?: (event: YouTubePlayerEvent) => void
@@ -46,9 +47,29 @@ declare global {
   }
 }
 
+/**
+ * We render the <iframe> ourselves instead of letting YT.Player build it from a
+ * <div>. A YT-built iframe carries no `allow` attribute, and iOS Safari refuses
+ * programmatic playback on a cross-origin iframe that hasn't been delegated the
+ * autoplay permission — so `playVideo()` silently did nothing on iPhone even
+ * though it worked on desktop Chrome. `playsinline=1` likewise stops iOS from
+ * hijacking playback into a fullscreen player.
+ */
+function buildEmbedSrc(videoId: string) {
+  const params = new URLSearchParams({
+    enablejsapi: '1',
+    controls: '0',
+    disablekb: '1',
+    playsinline: '1',
+    rel: '0',
+    origin: window.location.origin,
+  })
+  return `https://www.youtube.com/embed/${videoId}?${params}`
+}
+
 export default function MusicPlayer() {
   const playerBarRef = useRef<HTMLDivElement>(null)
-  const hostRef = useRef<HTMLDivElement>(null)
+  const hostRef = useRef<HTMLIFrameElement>(null)
   const playerRef = useRef<YouTubePlayer | null>(null)
   const trackIndexRef = useRef(0)
   // Set when the guest opens the gate before the player has finished
@@ -69,9 +90,9 @@ export default function MusicPlayer() {
   useEffect(() => {
     function createPlayer() {
       if (!hostRef.current || playerRef.current || !window.YT) return
+      // Attach to the iframe we rendered (which carries allow="autoplay" and
+      // playsinline). Its src already supplies the video id and player vars.
       playerRef.current = new window.YT.Player(hostRef.current, {
-        videoId: TRACKS[0].videoId,
-        playerVars: { controls: 0, disablekb: 1 },
         events: {
           onReady: (event) => {
             event.target.setVolume(DEFAULT_LEVEL * 20)
@@ -156,28 +177,42 @@ export default function MusicPlayer() {
     }
   }
 
+  // Tapping prev/next always starts the new track. It used to `cueVideoById`
+  // (load, don't play) whenever `isPlaying` was false, which left the guest
+  // staring at a track that never started — `isPlaying` is driven by the
+  // player's async onStateChange, so it is routinely still false right after
+  // entering, and stays false whenever autoplay was refused.
   function goToTrack(nextIndex: number) {
     const wrapped = (nextIndex + TRACKS.length) % TRACKS.length
     setTrackIndex(wrapped)
     setProgress(0)
-    const player = playerRef.current
-    if (!player) return
-    if (isPlaying) {
-      player.loadVideoById(TRACKS[wrapped].videoId)
-    } else {
-      player.cueVideoById(TRACKS[wrapped].videoId)
-    }
+    playerRef.current?.loadVideoById(TRACKS[wrapped].videoId)
   }
 
   return (
     <>
-      <div ref={hostRef} className="hidden" aria-hidden="true" />
+      {/* Visually hidden rather than display:none — some mobile browsers won't
+          start audio in a fully un-rendered iframe. */}
+      <iframe
+        ref={hostRef}
+        src={buildEmbedSrc(TRACKS[0].videoId)}
+        allow="autoplay; encrypted-media"
+        title=""
+        aria-hidden="true"
+        tabIndex={-1}
+        className="pointer-events-none absolute -z-10 h-px w-px border-0 opacity-0"
+      />
 
       <EntryGate onEnter={startMusic} />
 
-      {/* Bottom-center dock. The wrapper ignores pointer events so it never
-          intercepts taps meant for the page; only the bar itself is live. */}
-      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 mx-auto flex max-w-md justify-center px-4 pb-3">
+      {/* Bottom-right dock. The wrapper ignores pointer events so it never
+          intercepts taps meant for the page; only the bar itself is live.
+          The safe-area padding keeps the pill clear of iOS Safari's bottom
+          toolbar, which was covering it at the previous bottom-0/pb-3. */}
+      <div
+        className="pointer-events-none fixed inset-x-0 bottom-0 z-50 mx-auto flex max-w-md justify-end px-4"
+        style={{ paddingBottom: 'calc(1.25rem + env(safe-area-inset-bottom, 0px))' }}
+      >
         <div
           ref={playerBarRef}
           role={isOpen ? undefined : 'button'}
@@ -201,7 +236,9 @@ export default function MusicPlayer() {
           }`}
           style={{
             background:
-              'linear-gradient(180deg, var(--color-maroon), var(--color-maroon-deep))',
+              // Same deep-violet family as the entry gate, so the site keeps to
+              // one accent colour rather than introducing a separate maroon.
+              'linear-gradient(180deg, var(--color-violet), var(--color-violet-deep))',
           }}
         >
           {/* spinning vinyl disc — grows slightly when expanded */}

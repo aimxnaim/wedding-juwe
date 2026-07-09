@@ -56,9 +56,10 @@ export default function EntryGate({ onEnter }: { onEnter: () => void }) {
   )
 }
 
-/** The artwork's own maroon ground: fills the stretchable middle and, on
- * desktop, the area beside the centred stage. */
-const GATE_MAROON = '#510400'
+/** The artwork's own ground (--color-violet-deep): fills the stretchable middle
+ * and, on desktop, the area beside the centred stage. Must stay in sync with
+ * the background fills inside welcome-gate-wedding-juwe.svg. */
+const GATE_BG = '#2c2445'
 
 /**
  * The artwork is a fixed-aspect panel but phone screens are far taller, so it
@@ -103,7 +104,7 @@ function GateLeaf({ side }: { side: 'left' | 'right' }) {
       // leaf's box can round a hair short of the edge and leak a hairline of the
       // site through; bleeding past the edge makes that impossible. The 50% clip
       // still lands on the true centre since the overhang is symmetric.
-      style={{ inset: '-2px', backgroundColor: GATE_MAROON }}
+      style={{ inset: '-2px', backgroundColor: GATE_BG }}
     >
       {/* Stage matches the app's centred card width, so the gate's proportions
           stay phone-like on desktop; the leaf's maroon fills either side. */}

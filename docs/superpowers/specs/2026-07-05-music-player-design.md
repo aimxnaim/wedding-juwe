@@ -421,6 +421,37 @@ Kept: the vinyl groove disc styling, the YouTube IFrame wiring
 (Addendum 1), prev/next wraparound, ENDED auto-advance, reduced-motion
 handling for the spin.
 
+## Addendum 5: iOS production fixes + deep-violet theming
+
+Three bugs reported from the deployed site on iPhone Safari, all invisible
+in desktop Chrome:
+
+- **Autoplay never started.** `new YT.Player(<div>)` lets the API build the
+  iframe, and that iframe carries **no `allow` attribute**. iOS Safari
+  refuses programmatic playback on a cross-origin iframe that has not been
+  delegated the autoplay permission, so `playVideo()` inside the gate's tap
+  handler silently did nothing. Fixed by rendering the `<iframe>` ourselves
+  with `allow="autoplay; encrypted-media"` and `playsinline=1` (the latter
+  stops iOS hijacking playback into a fullscreen player), then attaching
+  `new YT.Player(iframeEl, { events })` to it — the video id and player vars
+  now come from the iframe's own `src`. The host is also visually hidden
+  (`h-px w-px opacity-0`) rather than `display: none`, since some mobile
+  browsers won't start audio in a fully un-rendered iframe.
+- **Prev/next loaded but didn't play.** `goToTrack` called `cueVideoById`
+  (load without playing) whenever `isPlaying` was false. `isPlaying` is
+  driven by the player's *async* `onStateChange`, so it is routinely still
+  false right after entry — and stayed false permanently once autoplay was
+  refused. Now prev/next always `loadVideoById`: an explicit tap is an
+  explicit intent to play.
+- **The pill was hidden behind iOS Safari's bottom toolbar** at
+  `bottom-0` + `pb-3` (12px). The dock now uses
+  `padding-bottom: calc(1.25rem + env(safe-area-inset-bottom))`.
+
+Also, per the user: the pill moves from bottom-**centre** to bottom-**right**
+(`justify-end`), and the maroon is dropped in favour of the site's existing
+`--color-violet`/`--color-violet-deep` — matching the entry gate, so the
+invitation keeps to one accent colour instead of introducing a second.
+
 ## Testing
 
 - Manual verification: tap the collapsed disc, confirm it grows smoothly
