@@ -240,10 +240,10 @@ export default function MusicPlayer() {
           }
           // px-2.5 in both states: unequal padding slid the disc 2px sideways
           // as the card opened. Equal padding pins it, so only width animates.
-          className={`pointer-events-auto flex h-14 items-center overflow-hidden border border-gold/40 px-2.5 text-cream shadow-[0_6px_18px_-10px_rgba(44,36,69,0.5)] backdrop-blur-md transition-[width,border-radius] duration-[450ms] ease-[cubic-bezier(0.5,0,0.3,1)] ${
-            isOpen
-              ? 'w-[268px] gap-2.5 rounded-[1.75rem]'
-              : 'w-[92px] cursor-pointer gap-2 rounded-full'
+          // Everything but the disc is absolutely positioned, so the width
+          // animation never reflows the contents mid-flight.
+          className={`pointer-events-auto relative flex h-14 items-center overflow-hidden border border-gold/40 px-2.5 text-cream shadow-[0_6px_18px_-10px_rgba(44,36,69,0.5)] backdrop-blur-md transition-[width,border-radius] duration-[450ms] ease-[cubic-bezier(0.5,0,0.3,1)] ${
+            isOpen ? 'w-[268px] rounded-[1.75rem]' : 'w-[92px] cursor-pointer rounded-full'
           }`}
           style={{
             background:
@@ -272,73 +272,84 @@ export default function MusicPlayer() {
             <span className="absolute inset-[42%] rounded-full bg-gold" />
           </div>
 
+          {/* Both layers stay mounted and absolutely positioned beside the disc.
+              Mounting them conditionally made the contents pop in and then get
+              squeezed by the width animation; cross-fading them instead lets the
+              bar's width and its contents move independently. Each layer fades
+              out fast, and fades in only once the width has mostly settled. */}
+
           {/* collapsed: little equalizer tick as the now-playing signal */}
-          {!isOpen && (
-            <div aria-hidden="true" className="flex h-3.5 items-end gap-0.5">
-              <span className="w-0.5 rounded-full bg-gold-soft animate-eq-bar" style={{ height: '6px' }} />
-              <span
-                className="w-0.5 rounded-full bg-gold-soft animate-eq-bar"
-                style={{ height: '14px', animationDelay: '0.2s' }}
-              />
-              <span
-                className="w-0.5 rounded-full bg-gold-soft animate-eq-bar"
-                style={{ height: '9px', animationDelay: '0.4s' }}
-              />
+          <div
+            aria-hidden="true"
+            className={`absolute left-14 top-1/2 flex h-3.5 -translate-y-1/2 items-end gap-0.5 transition-opacity ${
+              isOpen ? 'opacity-0 duration-150' : 'opacity-100 delay-200 duration-200'
+            }`}
+          >
+            <span className="w-0.5 rounded-full bg-gold-soft animate-eq-bar" style={{ height: '6px' }} />
+            <span
+              className="w-0.5 rounded-full bg-gold-soft animate-eq-bar"
+              style={{ height: '14px', animationDelay: '0.2s' }}
+            />
+            <span
+              className="w-0.5 rounded-full bg-gold-soft animate-eq-bar"
+              style={{ height: '9px', animationDelay: '0.4s' }}
+            />
+          </div>
+
+          {/* expanded: title + progress + controls. `inert` keeps the controls
+              out of the tab order and off screen readers while collapsed. */}
+          <div
+            inert={!isOpen}
+            className={`absolute inset-y-0 left-14 right-2.5 flex items-center gap-2.5 transition-opacity ${
+              isOpen ? 'opacity-100 delay-200 duration-200' : 'opacity-0 duration-150'
+            }`}
+          >
+            <div className="min-w-0 flex-1">
+              <p className="truncate font-display text-sm text-cream">{TRACKS[trackIndex].title}</p>
+              <p className="text-[0.55rem] tracking-[0.2em] text-gold-soft/70">MUZIK MAJLIS</p>
+              <div className="mt-1.5 h-0.5 rounded-full bg-cream/25">
+                <div
+                  className="h-full rounded-full bg-gold-soft transition-[width] duration-500 ease-linear"
+                  style={{ width: `${Math.min(100, progress * 100)}%` }}
+                />
+              </div>
             </div>
-          )}
 
-          {/* expanded: title + progress + controls */}
-          {isOpen && (
-            <>
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-display text-sm text-cream">
-                  {TRACKS[trackIndex].title}
-                </p>
-                <p className="text-[0.55rem] tracking-[0.2em] text-gold-soft/70">MUZIK MAJLIS</p>
-                <div className="mt-1.5 h-0.5 rounded-full bg-cream/25">
-                  <div
-                    className="h-full rounded-full bg-gold-soft transition-[width] duration-500 ease-linear"
-                    style={{ width: `${Math.min(100, progress * 100)}%` }}
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-none items-center gap-2 text-gold-soft">
-                <button
-                  type="button"
-                  aria-label="Lagu sebelum"
-                  onClick={() => goToTrack(trackIndex - 1)}
-                  className="transition hover:text-cream"
-                >
-                  <FiSkipBack size={16} />
-                </button>
-                <button
-                  type="button"
-                  aria-label={isPlaying ? 'Jeda muzik' : 'Main muzik'}
-                  onClick={togglePlay}
-                  className="transition hover:text-cream"
-                >
-                  {isPlaying ? <FiPause size={20} /> : <FiPlay size={20} />}
-                </button>
-                <button
-                  type="button"
-                  aria-label="Lagu seterusnya"
-                  onClick={() => goToTrack(trackIndex + 1)}
-                  className="transition hover:text-cream"
-                >
-                  <FiSkipForward size={16} />
-                </button>
-                <button
-                  type="button"
-                  aria-label="Tutup pemain muzik"
-                  onClick={() => setIsOpen(false)}
-                  className="text-gold-soft/60 transition hover:text-cream"
-                >
-                  <FiX size={15} />
-                </button>
-              </div>
-            </>
-          )}
+            <div className="flex flex-none items-center gap-2 text-gold-soft">
+              <button
+                type="button"
+                aria-label="Lagu sebelum"
+                onClick={() => goToTrack(trackIndex - 1)}
+                className="transition hover:text-cream"
+              >
+                <FiSkipBack size={16} />
+              </button>
+              <button
+                type="button"
+                aria-label={isPlaying ? 'Jeda muzik' : 'Main muzik'}
+                onClick={togglePlay}
+                className="transition hover:text-cream"
+              >
+                {isPlaying ? <FiPause size={20} /> : <FiPlay size={20} />}
+              </button>
+              <button
+                type="button"
+                aria-label="Lagu seterusnya"
+                onClick={() => goToTrack(trackIndex + 1)}
+                className="transition hover:text-cream"
+              >
+                <FiSkipForward size={16} />
+              </button>
+              <button
+                type="button"
+                aria-label="Tutup pemain muzik"
+                onClick={() => setIsOpen(false)}
+                className="text-gold-soft/60 transition hover:text-cream"
+              >
+                <FiX size={15} />
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </>
