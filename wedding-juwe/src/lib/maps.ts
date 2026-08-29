@@ -8,10 +8,14 @@
  * *website*, which is what elderly guests get stuck on.
  *
  * So each context gets the one link the platform itself knows how to resolve,
- * and the platform decides what to do when the app is missing. We never race a
- * timer against the "Open in Waze?" prompt: a timer cannot tell a guest who
- * tapped Cancel from a guest who has no app installed, and guessing wrong
- * yanks them somewhere they did not ask to go.
+ * and the platform decides what to do when the app is missing.
+ *
+ * On iOS that means the `waze://` / `comgooglemaps://` schemes even in a full
+ * browser, where a Universal Link would look tidier. A Universal Link that
+ * fails to fire leaves Safari loading waze.com, and *that* page raises its own
+ * "Open in Waze?" prompt — by then the guest has already left the invitation,
+ * so tapping Cancel strands them on waze.com. Addressing the app directly
+ * keeps the prompt on our page, so Cancel simply returns to the invitation.
  */
 
 export const VENUE = {
@@ -39,21 +43,15 @@ export const MAP_EMBED_URL = `https://www.google.com/maps/embed?origin=mfe&pb=!1
 export const GOOGLE_MAPS_WEB_URL = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(LL)}`
 export const WAZE_WEB_URL = `https://waze.com/ul?ll=${encodeURIComponent(LL)}&navigate=yes`
 
-export type Platform = 'ios' | 'ios-webview' | 'android' | 'other'
+export type Platform = 'ios' | 'android' | 'other'
 
 export function detectPlatform(userAgent: string, maxTouchPoints = 0): Platform {
   if (/android/i.test(userAgent)) return 'android'
 
-  const isIos =
-    /iphone|ipad|ipod/i.test(userAgent) ||
-    // iPadOS 13+ reports a desktop Macintosh user agent; touch points give it away.
-    (/macintosh/i.test(userAgent) && maxTouchPoints > 1)
-  if (!isIos) return 'other'
-
-  // A real browser on iOS advertises Safari/ or its own token (CriOS, FxiOS,
-  // EdgiOS). The bare WKWebView that WhatsApp and friends embed advertises
-  // none of them — and that is exactly where Universal Links stop working.
-  return /safari|crios|fxios|edgios/i.test(userAgent) ? 'ios' : 'ios-webview'
+  if (/iphone|ipad|ipod/i.test(userAgent)) return 'ios'
+  // iPadOS 13+ reports a desktop Macintosh user agent; touch points give it away.
+  if (/macintosh/i.test(userAgent) && maxTouchPoints > 1) return 'ios'
+  return 'other'
 }
 
 /**
@@ -71,10 +69,7 @@ function androidIntent(httpsUrl: string, androidPackage: string): string {
 
 export function wazeUrl(platform: Platform): string {
   if (platform === 'android') return androidIntent(WAZE_WEB_URL, 'com.waze')
-  // Universal Links are dead inside a WebView, so address the app directly.
-  if (platform === 'ios-webview') return `waze://?ll=${LL}&navigate=yes`
-  // Safari/Chrome on iOS resolve this to the app silently, or to the website
-  // if Waze is not installed. No prompt, no guesswork.
+  if (platform === 'ios') return `waze://?ll=${LL}&navigate=yes`
   return WAZE_WEB_URL
 }
 
@@ -82,8 +77,6 @@ export function googleMapsUrl(platform: Platform): string {
   if (platform === 'android') {
     return androidIntent(GOOGLE_MAPS_WEB_URL, 'com.google.android.apps.maps')
   }
-  if (platform === 'ios-webview') {
-    return `comgooglemaps://?q=${LL}&center=${LL}&zoom=17`
-  }
+  if (platform === 'ios') return `comgooglemaps://?q=${LL}&center=${LL}&zoom=17`
   return GOOGLE_MAPS_WEB_URL
 }
