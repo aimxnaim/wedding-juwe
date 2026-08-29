@@ -6,29 +6,29 @@ import Reveal from './Reveal'
 import SectionOrnament from './SectionOrnament'
 import {
   GOOGLE_MAPS_WEB_URL,
+  MAP_EMBED_URL,
   VENUE,
   WAZE_WEB_URL,
   detectPlatform,
-  googleMapsAppUrl,
-  openMapApp,
-  wazeAppUrl,
+  googleMapsUrl,
+  wazeUrl,
   type Platform,
 } from '../lib/maps'
 
-const MAP_EMBED_SRC = `https://www.google.com/maps?q=${VENUE.lat},${VENUE.lng}&z=17&output=embed`
-
 export default function LocationSection() {
   // The href stays a plain https link so long-press, copy and desktop still
-  // work; the click handler is what gets the native app to open.
-  const openIn = (
-    appUrl: (platform: Platform) => string | null,
-    webUrl: string,
-  ) => (event: MouseEvent<HTMLAnchorElement>) => {
-    const platform = detectPlatform(navigator.userAgent, navigator.maxTouchPoints)
-    if (platform === 'other') return
-    event.preventDefault()
-    openMapApp(appUrl(platform), webUrl)
-  }
+  // work. On the platforms that need a different URL to reach the app, the
+  // click handler swaps it in — then hands off and stays out of the way.
+  const openIn =
+    (resolve: (platform: Platform) => string, webUrl: string) =>
+    (event: MouseEvent<HTMLAnchorElement>) => {
+      const target = resolve(
+        detectPlatform(navigator.userAgent, navigator.maxTouchPoints),
+      )
+      if (target === webUrl) return
+      event.preventDefault()
+      window.location.href = target
+    }
 
   return (
     <section className="relative overflow-hidden bg-songket px-5 pb-16 pt-14 text-violet">
@@ -48,12 +48,23 @@ export default function LocationSection() {
             className="mt-8 overflow-hidden rounded-3xl border border-gold/40 bg-ivory shadow-[0_18px_40px_-18px_rgba(30,35,82,0.35)]
               ring-1 ring-inset ring-gold/15"
           >
-            <div className="aspect-[4/3] w-full">
+            <div className="relative aspect-[4/3] w-full bg-ivory">
+              {/* Sits behind the frame, so a map that never paints (weak signal,
+                  in-app browser) still leaves the guest something to read. */}
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-6 text-center"
+              >
+                <SiGooglemaps className="h-8 w-8 text-violet/25" />
+                <p className="text-xs leading-relaxed text-violet/45">
+                  {VENUE.label}
+                </p>
+              </div>
               <iframe
                 title="Lokasi Majlis"
-                src={MAP_EMBED_SRC}
+                src={MAP_EMBED_URL}
                 loading="lazy"
-                className="h-full w-full border-0"
+                className="relative h-full w-full border-0"
                 referrerPolicy="no-referrer-when-downgrade"
               />
             </div>
@@ -71,7 +82,7 @@ export default function LocationSection() {
                   href={WAZE_WEB_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  onClick={openIn(wazeAppUrl, WAZE_WEB_URL)}
+                  onClick={openIn(wazeUrl, WAZE_WEB_URL)}
                   className="flex w-28 flex-col items-center gap-2"
                 >
                   <span
@@ -89,7 +100,7 @@ export default function LocationSection() {
                   href={GOOGLE_MAPS_WEB_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  onClick={openIn(googleMapsAppUrl, GOOGLE_MAPS_WEB_URL)}
+                  onClick={openIn(googleMapsUrl, GOOGLE_MAPS_WEB_URL)}
                   className="flex w-28 flex-col items-center gap-2"
                 >
                   <span
