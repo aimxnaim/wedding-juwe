@@ -6,6 +6,7 @@ import Reveal from './Reveal'
 import SectionOrnament from './SectionOrnament'
 import {
   GOOGLE_MAPS_WEB_URL,
+  MAPS_BUILD,
   MAP_EMBED_URL,
   VENUE,
   WAZE_WEB_URL,
@@ -29,6 +30,13 @@ export default function LocationSection() {
       event.preventDefault()
       window.location.href = target
     }
+
+  // Temporary: append ?debug to the URL to see what this build resolves to on
+  // the device in hand. Remove once the map links are confirmed working.
+  const debug = new URLSearchParams(window.location.search).has('debug')
+  const platform = debug
+    ? detectPlatform(navigator.userAgent, navigator.maxTouchPoints)
+    : null
 
   return (
     <section className="relative overflow-hidden bg-songket px-5 pb-16 pt-14 text-violet">
@@ -115,6 +123,18 @@ export default function LocationSection() {
                   </span>
                 </a>
               </div>
+
+              {platform && (
+                <pre className="mt-5 overflow-x-auto whitespace-pre-wrap break-all rounded-xl bg-violet/5 p-3 text-left text-[0.6rem] leading-relaxed text-violet/70">
+                  {[
+                    `build:    ${MAPS_BUILD}`,
+                    `platform: ${platform}`,
+                    `waze:     ${wazeUrl(platform)}`,
+                    `gmaps:    ${googleMapsUrl(platform)}`,
+                    `ua:       ${navigator.userAgent}`,
+                  ].join('\n')}
+                </pre>
+              )}
             </div>
           </div>
         </Reveal>

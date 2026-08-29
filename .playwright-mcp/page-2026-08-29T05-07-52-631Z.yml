@@ -1,0 +1,133 @@
+- main [ref=f4e3]:
+  - generic [ref=f4e5]:
+    - paragraph [ref=f4e6]: بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْم
+    - paragraph [ref=f4e10]: Raikan Cinta
+    - img "Najwan Shah & Aisyah monogram" [ref=f4e13]
+    - img "نجوان & عائشة — Najwan & Aisyah" [ref=f4e14]
+    - generic [ref=f4e15]:
+      - paragraph [ref=f4e18]: Ogos
+      - generic [ref=f4e20]:
+        - paragraph [ref=f4e21]: Ahad
+        - paragraph [ref=f4e22]: "30"
+        - paragraph [ref=f4e23]: 12:00 PM
+      - paragraph [ref=f4e26]: "2026"
+  - generic [ref=f4e29]:
+    - heading "Detik Bahagia" [level=2] [ref=f4e40]
+    - generic [ref=f4e49]:
+      - generic [ref=f4e50]:
+        - generic [ref=f4e51]:
+          - paragraph [ref=f4e52]: "00"
+          - paragraph [ref=f4e53]: Hari
+        - generic [ref=f4e54]: ":"
+      - generic [ref=f4e55]:
+        - generic [ref=f4e56]:
+          - paragraph [ref=f4e57]: "00"
+          - paragraph [ref=f4e58]: Jam
+        - generic [ref=f4e59]: ":"
+      - generic [ref=f4e60]:
+        - generic [ref=f4e61]:
+          - paragraph [ref=f4e62]: "00"
+          - paragraph [ref=f4e63]: Minit
+        - generic [ref=f4e64]: ":"
+      - generic [ref=f4e66]:
+        - paragraph [ref=f4e67]: "02"
+        - paragraph [ref=f4e68]: Saat
+  - generic [ref=f4e70]:
+    - heading "Lokasi Majlis" [level=2] [ref=f4e81]
+    - generic [ref=f4e89]:
+      - generic [ref=f4e90]:
+        - paragraph [ref=f4e94]: Lot-1700, Jalan Masjid Lundang, 15150 Kota Bharu, Kelantan
+        - iframe [ref=f4e95]:
+          
+      - generic [ref=f4e96]:
+        - paragraph [ref=f4e97]: "Bertempat di kediaman kami:"
+        - paragraph [ref=f4e98]: Lot-1700, Jalan Masjid Lundang,15150, Kota Bharu, Kelantan.
+        - generic [ref=f4e99]:
+          - link "Waze" [ref=f4e100] [cursor=pointer]:
+            - /url: https://waze.com/ul?ll=6.103472%2C102.256502&navigate=yes
+          - link "Google Maps" [ref=f4e105] [cursor=pointer]:
+            - /url: https://www.google.com/maps/search/?api=1&query=6.103472%2C102.256502
+  - generic [ref=f4e111]:
+    - heading "Ucapan & Doa" [level=2] [ref=f4e122]
+    - generic [ref=f4e131]:
+      - generic [ref=f4e132]:
+        - button "Tukar avatar" [ref=f4e134]:
+          - img "Avatar anda" [ref=f4e135]
+        - paragraph [ref=f4e143]: Pilih avatar anda
+      - generic [ref=f4e144]:
+        - generic [ref=f4e145]: Nama
+        - textbox "Nama" [ref=f4e146]:
+          - /placeholder: Nama anda
+      - generic [ref=f4e147]:
+        - generic [ref=f4e148]: Ucapan
+        - textbox "Ucapan" [ref=f4e149]:
+          - /placeholder: Tinggalkan ucapan & doa anda…
+      - button "Hantar Ucapan" [ref=f4e150]
+    - generic [ref=f4e151]:
+      - generic [ref=f4e152]: 7 Ucapan
+      - generic [ref=f4e156]:
+        - list [ref=f4e157]:
+          - listitem [ref=f4e158]:
+            - generic [ref=f4e160]:
+              - paragraph [ref=f4e161]: Najwan Test Picture
+              - paragraph [ref=f4e162]: 5 July 2026, 1:30 PM
+            - paragraph [ref=f4e166]: hai there
+          - listitem [ref=f4e167]:
+            - generic [ref=f4e169]:
+              - paragraph [ref=f4e170]: Rachel
+              - paragraph [ref=f4e171]: 3 July 2026, 6:20 PM
+            - paragraph [ref=f4e175]: Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library in London, took a 1914 Cicero translation and scrambled it to make dummy text for Letraset's Body Type sheets. It has survived not only many decades, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised thanks to these sheets and more recently with desktop publishing software like Aldus PageMaker and Microsoft Word including versions of Lorem Ipsum.
+            - button "Baca Lagi" [ref=f4e176]
+          - listitem [ref=f4e177]:
+            - generic [ref=f4e179]:
+              - paragraph [ref=f4e180]: Rafiq
+              - paragraph [ref=f4e181]: 3 July 2026, 6:18 PM
+            - paragraph [ref=f4e185]: Tahniah brooo semoga berbahagia
+          - listitem [ref=f4e186]:
+            - generic [ref=f4e188]:
+              - paragraph [ref=f4e189]: Bro
+              - paragraph [ref=f4e190]: 3 July 2026, 12:11 AM
+            - paragraph [ref=f4e194]: Hi there welcome
+          - listitem [ref=f4e195]:
+            - generic [ref=f4e197]:
+              - paragraph [ref=f4e198]: juwe
+              - paragraph [ref=f4e199]: 2 July 2026, 11:03 PM
+            - paragraph [ref=f4e203]: selamat pengantin baru
+          - listitem [ref=f4e204]:
+            - generic [ref=f4e206]:
+              - paragraph [ref=f4e207]: Diana
+              - paragraph [ref=f4e208]: 2 July 2026, 8:51 PM
+            - paragraph [ref=f4e212]: Selamat pengantin baru korang 💕
+          - listitem [ref=f4e213]:
+            - generic [ref=f4e215]:
+              - paragraph [ref=f4e216]: Aiman
+              - paragraph [ref=f4e217]: 2 July 2026, 8:33 PM
+            - paragraph [ref=f4e221]: happy wedding bro
+        - generic [ref=f4e222]:
+          - button "Ucapan 1" [ref=f4e223]
+          - button "Ucapan 2" [ref=f4e224]
+          - button "Ucapan 3" [ref=f4e225]
+          - button "Ucapan 4" [ref=f4e226]
+          - button "Ucapan 5" [ref=f4e227]
+          - button "Ucapan 6" [ref=f4e228]
+          - button "Ucapan 7" [ref=f4e229]
+  - iframe [ref=f4e230]:
+    
+  - button "Buka jemputan" [active] [ref=f4e231] [cursor=pointer]
+  - button "Buka pemain muzik" [ref=f4e256] [cursor=pointer]:
+    - generic [ref=f4e265]:
+      - generic:
+        - paragraph: Lagu 1
+        - paragraph: MUZIK MAJLIS
+      - generic [ref=f4e266]:
+        - button "Lagu sebelum" [ref=f4e267]
+        - button "Main muzik" [ref=f4e270]
+        - button "Lagu seterusnya" [ref=f4e273]
+        - button "Tutup pemain muzik" [ref=f4e276]
+  - generic [ref=f4e280]:
+    - img "نجوان & عائشة — Najwan & Aisyah" [ref=f4e281]
+    - paragraph [ref=f4e282]: 30 Ogos 2026
+    - paragraph [ref=f4e283]:
+      - text: Dibina oleh
+      - link "Aiman Naim" [ref=f4e284] [cursor=pointer]:
+        - /url: https://website-portfolio-sepia.vercel.app

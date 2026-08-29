@@ -2,6 +2,15 @@ import { useEffect, useRef, useState } from 'react'
 import welcomeGate from '../assets/welcome-gate-wedding-juwe.svg'
 
 /**
+ * When scrolling is handed back. The doors have swung most of the way open by
+ * now and the site behind them is plainly visible, so the lock has done its
+ * job long before the gate has finished leaving.
+ */
+const UNLOCK_MS = 600
+/** When the finished gate unmounts — swing + zoom-through are over by 1.9s. */
+const UNMOUNT_MS = 2000
+
+/**
  * Full-screen welcome gate shown on first load. While shut it is quietly
  * alive — the mandala turns slowly, gold rings ripple out from it, and a soft
  * light breathes behind it. Tapping anywhere swings the two halves apart on
@@ -15,6 +24,7 @@ import welcomeGate from '../assets/welcome-gate-wedding-juwe.svg'
  */
 export default function EntryGate({ onEnter }: { onEnter: () => void }) {
   const [isOpen, setIsOpen] = useState(false)
+  const [isScrollLocked, setIsScrollLocked] = useState(true)
   const [isDone, setIsDone] = useState(false)
   const rootRef = useRef<HTMLDivElement>(null)
 
@@ -28,12 +38,15 @@ export default function EntryGate({ onEnter }: { onEnter: () => void }) {
    * opens. `position: fixed` on the body (not just `overflow: hidden`) is what
    * actually holds on iOS Safari.
    *
-   * Keyed on `isDone` rather than mount: this component returns `null` when
-   * finished but stays mounted, so an unmount-only cleanup would never run and
-   * the page would stay frozen forever.
+   * Keyed on its own `isScrollLocked` flag rather than on mount or on `isDone`.
+   * Not mount: this component returns `null` when finished but stays mounted,
+   * so an unmount-only cleanup would never run and the page would stay frozen
+   * forever. Not `isDone` either: that fires at UNMOUNT_MS, but the gate is
+   * already fully faded by 1.7s, which left the guest staring at a vanished
+   * gate that still refused to scroll.
    */
   useEffect(() => {
-    if (isDone) return
+    if (!isScrollLocked) return
 
     const { body, documentElement: html } = document
     const previous = {
@@ -65,14 +78,17 @@ export default function EntryGate({ onEnter }: { onEnter: () => void }) {
       // Releasing `position: fixed` can leave the page scrolled; land at the top.
       window.scrollTo(0, 0)
     }
-  }, [isDone])
+  }, [isScrollLocked])
 
   function open() {
     if (isOpen) return
     onEnter() // start music within the user-gesture call stack
     setIsOpen(true)
+    // Give scrolling back as soon as the doors are open, rather than making the
+    // guest wait out the gate's whole exit animation.
+    window.setTimeout(() => setIsScrollLocked(false), UNLOCK_MS)
     // Unmount once the swing + zoom-through have finished (see index.css).
-    window.setTimeout(() => setIsDone(true), 2000)
+    window.setTimeout(() => setIsDone(true), UNMOUNT_MS)
   }
 
   if (isDone) return null

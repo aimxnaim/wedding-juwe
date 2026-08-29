@@ -18,6 +18,9 @@
  * keeps the prompt on our page, so Cancel simply returns to the invitation.
  */
 
+/** Bumped by hand so a deployed page can prove which build it is running. */
+export const MAPS_BUILD = 'ios-scheme-v3'
+
 export const VENUE = {
   lat: 6.103472,
   lng: 102.256502,
