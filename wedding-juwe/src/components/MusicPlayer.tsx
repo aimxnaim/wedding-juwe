@@ -133,6 +133,9 @@ export default function MusicPlayer() {
         previousCallback?.()
         createPlayer()
       }
+      // index.html already requests this script so the player warms up in
+      // parallel with the bundle; this append is only a fallback for the case
+      // where that tag is missing.
       if (!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')) {
         const tag = document.createElement('script')
         tag.src = 'https://www.youtube.com/iframe_api'

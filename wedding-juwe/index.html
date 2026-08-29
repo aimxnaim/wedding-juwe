@@ -5,6 +5,18 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#4a3c68" />
+    <!-- The background music is a YouTube embed. Both its iframe and the IFrame
+         API script are created by React, so nothing YouTube-related used to
+         start until the bundle had parsed and mounted (~800ms), and each of
+         YouTube's three hosts then paid a cold DNS + TCP + TLS handshake.
+         Warming the connections here, and fetching the API script in parallel
+         with the bundle, means the player is usually ready before the guest can
+         tap the gate — so the music starts on the tap rather than after it. -->
+    <link rel="preconnect" href="https://www.youtube-nocookie.com" />
+    <link rel="preconnect" href="https://www.youtube.com" />
+    <link rel="preconnect" href="https://s.ytimg.com" crossorigin />
+    <script src="https://www.youtube.com/iframe_api" async></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

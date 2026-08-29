@@ -1,15 +1,43 @@
+import type { MouseEvent } from 'react'
 import { SiGooglemaps, SiWaze } from 'react-icons/si'
 import Divider from './Divider'
 import FloatingAccents from './FloatingAccents'
 import Reveal from './Reveal'
 import SectionOrnament from './SectionOrnament'
-
-const MAP_EMBED_SRC = 'https://www.google.com/maps?q=6.103472,102.256502&z=17&output=embed'
-const WAZE_URL = 'https://waze.com/ul/hw30dwzhgx'
-const GOOGLE_MAPS_URL =
-  "https://www.google.com/maps/place/6°06'12.5%22N+102°15'23.4%22E/@6.103472,102.2539271,17z/data=!3m1!4b1!4m4!3m3!8m2!3d6.103472!4d102.256502!18m1!1e1?entry=ttu&g_ep=EgoyMDI2MDYyOS4wIKXMDSoASAFQAw%3D%3D"
+import {
+  GOOGLE_MAPS_WEB_URL,
+  MAPS_BUILD,
+  MAP_EMBED_URL,
+  VENUE,
+  WAZE_WEB_URL,
+  detectPlatform,
+  googleMapsUrl,
+  wazeUrl,
+  type Platform,
+} from '../lib/maps'
 
 export default function LocationSection() {
+  // The href stays a plain https link so long-press, copy and desktop still
+  // work. On the platforms that need a different URL to reach the app, the
+  // click handler swaps it in — then hands off and stays out of the way.
+  const openIn =
+    (resolve: (platform: Platform) => string, webUrl: string) =>
+    (event: MouseEvent<HTMLAnchorElement>) => {
+      const target = resolve(
+        detectPlatform(navigator.userAgent, navigator.maxTouchPoints),
+      )
+      if (target === webUrl) return
+      event.preventDefault()
+      window.location.href = target
+    }
+
+  // Temporary: append ?debug to the URL to see what this build resolves to on
+  // the device in hand. Remove once the map links are confirmed working.
+  const debug = new URLSearchParams(window.location.search).has('debug')
+  const platform = debug
+    ? detectPlatform(navigator.userAgent, navigator.maxTouchPoints)
+    : null
+
   return (
     <section className="relative overflow-hidden bg-songket px-5 pb-16 pt-14 text-violet">
       <FloatingAccents />
@@ -28,12 +56,23 @@ export default function LocationSection() {
             className="mt-8 overflow-hidden rounded-3xl border border-gold/40 bg-ivory shadow-[0_18px_40px_-18px_rgba(30,35,82,0.35)]
               ring-1 ring-inset ring-gold/15"
           >
-            <div className="aspect-[4/3] w-full">
+            <div className="relative aspect-[4/3] w-full bg-ivory">
+              {/* Sits behind the frame, so a map that never paints (weak signal,
+                  in-app browser) still leaves the guest something to read. */}
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-6 text-center"
+              >
+                <SiGooglemaps className="h-8 w-8 text-violet/25" />
+                <p className="text-xs leading-relaxed text-violet/45">
+                  {VENUE.label}
+                </p>
+              </div>
               <iframe
                 title="Lokasi Majlis"
-                src={MAP_EMBED_SRC}
+                src={MAP_EMBED_URL}
                 loading="lazy"
-                className="h-full w-full border-0"
+                className="relative h-full w-full border-0"
                 referrerPolicy="no-referrer-when-downgrade"
               />
             </div>
@@ -48,9 +87,10 @@ export default function LocationSection() {
 
               <div className="mt-5 flex justify-center gap-8">
                 <a
-                  href={WAZE_URL}
+                  href={WAZE_WEB_URL}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={openIn(wazeUrl, WAZE_WEB_URL)}
                   className="flex w-28 flex-col items-center gap-2"
                 >
                   <span
@@ -65,9 +105,10 @@ export default function LocationSection() {
                   </span>
                 </a>
                 <a
-                  href={GOOGLE_MAPS_URL}
+                  href={GOOGLE_MAPS_WEB_URL}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={openIn(googleMapsUrl, GOOGLE_MAPS_WEB_URL)}
                   className="flex w-28 flex-col items-center gap-2"
                 >
                   <span
@@ -82,6 +123,18 @@ export default function LocationSection() {
                   </span>
                 </a>
               </div>
+
+              {platform && (
+                <pre className="mt-5 overflow-x-auto whitespace-pre-wrap break-all rounded-xl bg-violet/5 p-3 text-left text-[0.6rem] leading-relaxed text-violet/70">
+                  {[
+                    `build:    ${MAPS_BUILD}`,
+                    `platform: ${platform}`,
+                    `waze:     ${wazeUrl(platform)}`,
+                    `gmaps:    ${googleMapsUrl(platform)}`,
+                    `ua:       ${navigator.userAgent}`,
+                  ].join('\n')}
+                </pre>
+              )}
             </div>
           </div>
         </Reveal>
