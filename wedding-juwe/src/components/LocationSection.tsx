@@ -1,15 +1,35 @@
+import type { MouseEvent } from 'react'
 import { SiGooglemaps, SiWaze } from 'react-icons/si'
 import Divider from './Divider'
 import FloatingAccents from './FloatingAccents'
 import Reveal from './Reveal'
 import SectionOrnament from './SectionOrnament'
+import {
+  GOOGLE_MAPS_WEB_URL,
+  VENUE,
+  WAZE_WEB_URL,
+  detectPlatform,
+  googleMapsAppUrl,
+  openMapApp,
+  wazeAppUrl,
+  type Platform,
+} from '../lib/maps'
 
-const MAP_EMBED_SRC = 'https://www.google.com/maps?q=6.103472,102.256502&z=17&output=embed'
-const WAZE_URL = 'https://waze.com/ul/hw30dwzhgx'
-const GOOGLE_MAPS_URL =
-  "https://www.google.com/maps/place/6°06'12.5%22N+102°15'23.4%22E/@6.103472,102.2539271,17z/data=!3m1!4b1!4m4!3m3!8m2!3d6.103472!4d102.256502!18m1!1e1?entry=ttu&g_ep=EgoyMDI2MDYyOS4wIKXMDSoASAFQAw%3D%3D"
+const MAP_EMBED_SRC = `https://www.google.com/maps?q=${VENUE.lat},${VENUE.lng}&z=17&output=embed`
 
 export default function LocationSection() {
+  // The href stays a plain https link so long-press, copy and desktop still
+  // work; the click handler is what gets the native app to open.
+  const openIn = (
+    appUrl: (platform: Platform) => string | null,
+    webUrl: string,
+  ) => (event: MouseEvent<HTMLAnchorElement>) => {
+    const platform = detectPlatform(navigator.userAgent, navigator.maxTouchPoints)
+    if (platform === 'other') return
+    event.preventDefault()
+    openMapApp(appUrl(platform), webUrl)
+  }
+
   return (
     <section className="relative overflow-hidden bg-songket px-5 pb-16 pt-14 text-violet">
       <FloatingAccents />
@@ -48,9 +68,10 @@ export default function LocationSection() {
 
               <div className="mt-5 flex justify-center gap-8">
                 <a
-                  href={WAZE_URL}
+                  href={WAZE_WEB_URL}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={openIn(wazeAppUrl, WAZE_WEB_URL)}
                   className="flex w-28 flex-col items-center gap-2"
                 >
                   <span
@@ -65,9 +86,10 @@ export default function LocationSection() {
                   </span>
                 </a>
                 <a
-                  href={GOOGLE_MAPS_URL}
+                  href={GOOGLE_MAPS_WEB_URL}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={openIn(googleMapsAppUrl, GOOGLE_MAPS_WEB_URL)}
                   className="flex w-28 flex-col items-center gap-2"
                 >
                   <span
